@@ -8,6 +8,7 @@ import {
   Skeleton,
   Stack,
 } from "@mantine/core"
+import { upperFirst } from "@mantine/hooks"
 import { useLocation, useNavigate } from "react-router-dom"
 
 export interface Props {
@@ -50,7 +51,7 @@ const Navbar = ({ navbarConfig, isLoading }: Props) => {
                   onClick={() => navigate(navbarPath)}
                   key={name}
                   active={location.pathname === navbarPath}
-                  label={name}
+                  label={upperFirst(name)}
                   color={colorFamily}
                 />
               )

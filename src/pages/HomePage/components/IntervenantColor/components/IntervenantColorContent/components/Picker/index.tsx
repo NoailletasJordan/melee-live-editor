@@ -5,9 +5,16 @@ interface Props {
   color: string
   handleChangeColor: (newColor: string) => void
   isLoading: boolean
+  disableConfirm: boolean
 }
 
-const Picker = ({ isLoading, color, handleChangeColor, onConfirm }: Props) => (
+const Picker = ({
+  disableConfirm,
+  isLoading,
+  color,
+  handleChangeColor,
+  onConfirm,
+}: Props) => (
   <Group>
     <ColorInput
       format="hexa"
@@ -15,8 +22,13 @@ const Picker = ({ isLoading, color, handleChangeColor, onConfirm }: Props) => (
       value={color}
       onChange={handleChangeColor}
       withPreview={true}
+      maxLength={9}
     />
-    <Button loading={isLoading} onClick={onConfirm}>
+    <Button
+      disabled={!isLoading && disableConfirm}
+      loading={isLoading}
+      onClick={onConfirm}
+    >
       Confirmer
     </Button>
   </Group>

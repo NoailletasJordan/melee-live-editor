@@ -1,36 +1,42 @@
 import Title from "@/components/Layout/components/Title"
 import {
   subscribeToIntervenantColors,
-  updateIntervenantColors,
+  updateIntervenantColor,
 } from "@/firebase"
 import { IIntervenantColors } from "@/types"
-import { Button, Drawer, ScrollArea } from "@mantine/core"
+import { ICON_SIZE_DEFAULT } from "@/utils"
+import { Box, Button, Drawer, ScrollArea, Skeleton } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { IconCheck } from "@tabler/icons-react"
-import type { DataSnapshot, Unsubscribe } from "firebase/database"
+import type { Unsubscribe } from "firebase/database"
 import { useEffect, useRef, useState } from "react"
-import IntervenantColorChanger from "../IntervenantColorChanger/index"
+import { Adjustments } from "tabler-icons-react"
+import IntervenantColorContent from "./components/IntervenantColorContent"
 
 const COLOR_SETTINGS_INITIAL = {
-  companyColor: "white",
-  nameColor: "white",
+  companyColor: "",
+  nameColor: "",
 }
 
 const IntervenantColor = () => {
   const unsubscriberRef = useRef<Unsubscribe>()
-  const [type, setType] = useState<keyof IIntervenantColors>("nameColor")
-  const [colorSettings, setColorSettings] = useState<IIntervenantColors>(
+  const [drawerIsOpened, drawerHandler] = useDisclosure(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [selectedColorField, setType] =
+    useState<keyof IIntervenantColors>("nameColor")
+  const [colorsConfig, setColorsConfig] = useState<IIntervenantColors>(
     COLOR_SETTINGS_INITIAL
   )
-  const [drawerIsOpened, drawerHandler] = useDisclosure(false)
-  const [isLoading, setIsLoading] = useState(false)
+  // Used to reset colorsConfig state and compare values
+  const [colorsConfigOld, setColorsConfigOld] = useState(COLOR_SETTINGS_INITIAL)
 
   useEffect(() => {
     ;(async () => {
       const unsubscriber = await subscribeToIntervenantColors(
         onIntervenantColorCallback
       )
+
       unsubscriberRef.current = unsubscriber
 
       return () => {
@@ -39,22 +45,25 @@ const IntervenantColor = () => {
     })()
   }, [])
 
-  const onIntervenantColorCallback = (snapshot: DataSnapshot) => {
-    const newColorSettings: IIntervenantColors = snapshot.val()
-    setColorSettings(newColorSettings)
+  const resetColorsConfigToOld = () => setColorsConfig(colorsConfigOld)
+
+  const onIntervenantColorCallback = (newColors: IIntervenantColors) => {
+    setColorsConfig(newColors)
+    setColorsConfigOld(newColors)
+    setIsLoading(false)
   }
 
   const updateColorSettings =
-    (type: keyof IIntervenantColors) => (newColor: string) => {
-      setColorSettings({ ...colorSettings, [type]: newColor })
+    (selectedColorField: keyof IIntervenantColors) => (newColor: string) => {
+      setColorsConfig({ ...colorsConfig, [selectedColorField]: newColor })
     }
 
-  const onSubmit = async () => {
-    /** Temp */
-    console.log({ colorSettings }, "submit")
+  const submitter = async () => {
     setIsLoading(true)
-    await updateIntervenantColors(colorSettings)
-    setIsLoading(false)
+    await updateIntervenantColor({
+      data: colorsConfig[selectedColorField],
+      colorField: selectedColorField,
+    })
 
     notifications.show({
       icon: <IconCheck size="1.2rem" />,
@@ -65,28 +74,47 @@ const IntervenantColor = () => {
     drawerHandler.close()
   }
 
+  const currentEntryIsValid = () => {
+    const isValidEntry = CSS.supports("color", colorsConfig[selectedColorField])
+    const isDifferentThanOldValue =
+      colorsConfig[selectedColorField] !== colorsConfigOld[selectedColorField]
+    return isValidEntry && isDifferentThanOldValue
+  }
+
   return (
     <>
       <Drawer
         opened={drawerIsOpened}
-        onClose={drawerHandler.close}
+        onClose={() => {
+          drawerHandler.close()
+          resetColorsConfigToOld()
+        }}
         position="right"
         title={<Title>Configuration de l'intervenant</Title>}
         scrollAreaComponent={ScrollArea.Autosize}
       >
-        <IntervenantColorChanger
-          onConfirm={onSubmit}
-          handleChangeColor={updateColorSettings(type)}
-          color={colorSettings[type]}
-          type={type}
+        <IntervenantColorContent
+          disableConfirm={!currentEntryIsValid()}
+          onConfirm={submitter}
+          handleChangeColor={updateColorSettings(selectedColorField)}
+          color={colorsConfig[selectedColorField]}
+          colorField={selectedColorField}
           handleChangeType={setType}
           isLoading={isLoading}
         />
       </Drawer>
 
-      <Button variant="subtle" onClick={drawerHandler.open}>
-        Couleurs intervenant
-      </Button>
+      <Box>
+        <Skeleton visible={isLoading}>
+          <Button
+            leftIcon={<Adjustments size={ICON_SIZE_DEFAULT} />}
+            variant="subtle"
+            onClick={drawerHandler.open}
+          >
+            Couleurs intervenant
+          </Button>
+        </Skeleton>
+      </Box>
     </>
   )
 }

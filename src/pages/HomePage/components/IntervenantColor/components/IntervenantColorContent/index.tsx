@@ -5,25 +5,28 @@ import Picker from "./components/Picker"
 import PreSelected from "./components/PreSelected/index"
 
 interface Props {
-  type: keyof IIntervenantColors
+  colorField: keyof IIntervenantColors
   color: string
   onConfirm: () => void
   handleChangeColor: (newColor: string) => void
-  handleChangeType: (type: keyof IIntervenantColors) => void
+  handleChangeType: (colorField: keyof IIntervenantColors) => void
   isLoading: boolean
+  disableConfirm: boolean
 }
 
-const IntervenantColorChanger = (props: Props) => {
+const SEGMENTED_CONTROL_DATA = [
+  { label: "Couleur de l'intervenant", value: "nameColor" },
+  { label: "Couleur de l'entreprise", value: "companyColor" },
+]
+
+const IntervenantColorContent = (props: Props) => {
   const [preselectedColorIsOpen, { toggle }] = useDisclosure(false)
 
   return (
     <Stack>
       <SegmentedControl
-        data={[
-          { label: "Couleur de l'intervenant", value: "nameColor" },
-          { label: "Couleur de l'entreprise", value: "companyColor" },
-        ]}
-        value={props.type}
+        data={SEGMENTED_CONTROL_DATA}
+        value={props.colorField}
         onChange={props.handleChangeType}
       />
 
@@ -43,4 +46,4 @@ const IntervenantColorChanger = (props: Props) => {
   )
 }
 
-export default IntervenantColorChanger
+export default IntervenantColorContent

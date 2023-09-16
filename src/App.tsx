@@ -14,9 +14,6 @@ const App = () => {
   const [allData, setAllData] = useState<IDatabase>()
   const [isLoading, setIsLoading] = useState(true)
 
-  /** Temp */
-  console.log({ allData })
-
   useEffect(() => {
     ;(async () => {
       const res = await getAllDatabase()
@@ -38,7 +35,12 @@ const App = () => {
       <BrowserRouter>
         <Layout navbarConfig={roomsDataWithId} isLoading={isLoading}>
           <Routes>
-            <Route index element={<HomePage roomsWithId={roomsDataWithId} />} />
+            <Route
+              index
+              element={
+                <HomePage isLoading={isLoading} roomsWithId={roomsDataWithId} />
+              }
+            />
             <Route path="/:roomId/settings" element={<SettingsPage />} />
             <Route path="/:roomId/banner" element={<BannerPage />} />
           </Routes>

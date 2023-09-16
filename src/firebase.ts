@@ -1,13 +1,6 @@
 import { initializeApp } from "firebase/app"
-import {
-  DataSnapshot,
-  get,
-  getDatabase,
-  onValue,
-  ref,
-  set,
-} from "firebase/database"
-import { IDatabase, IIntervenantColors } from "./types"
+import { get, getDatabase, onValue, ref, set } from "firebase/database"
+import { IDatabase, IIntervenantColors, IRoomData } from "./types"
 
 const config = {
   apiKey: "AIzaSyAKnmClusQg4EMcdGz12I7QJww8MUwIzOs",
@@ -29,13 +22,36 @@ const getAllDatabase = async (): Promise<IDatabase> => {
 }
 
 const subscribeToIntervenantColors = async (
-  onValueUpdate: (snapshot: DataSnapshot) => void
+  onValueUpdate: (colorsConfig: IIntervenantColors) => void
 ) => {
   const starCountRef = ref(db, "/configIntervenant/colorSettings")
-  return await onValue(starCountRef, onValueUpdate)
+  return await onValue(starCountRef, (snapshot) =>
+    onValueUpdate(snapshot.val())
+  )
 }
 
-const updateIntervenantColors = (data: IIntervenantColors) =>
-  set(ref(db, "/configIntervenant/colorSettings/"), data)
+interface ISubscribeToRoom {
+  onValueUpdate: (roomData: IRoomData) => void
+  roomId: string
+}
+const subscribeToRoom = async ({ onValueUpdate, roomId }: ISubscribeToRoom) => {
+  const starCountRef = ref(db, `/salles/${roomId}`)
+  return await onValue(starCountRef, (snapshot) =>
+    onValueUpdate(snapshot.val())
+  )
+}
 
-export { getAllDatabase, subscribeToIntervenantColors, updateIntervenantColors }
+const updateIntervenantColor = ({
+  data,
+  colorField,
+}: {
+  data: string
+  colorField: keyof IIntervenantColors
+}) => set(ref(db, `/configIntervenant/colorSettings/${colorField}`), data)
+
+export {
+  getAllDatabase,
+  subscribeToIntervenantColors,
+  subscribeToRoom,
+  updateIntervenantColor,
+}

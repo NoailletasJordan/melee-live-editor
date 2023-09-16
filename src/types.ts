@@ -48,4 +48,5 @@ export interface IRoomData {
   readError: boolean
   colorFamily: ColorFamily
   description: string
+  allowIntervenantNamesLinebreak: boolean
 }

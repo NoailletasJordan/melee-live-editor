@@ -1,4 +1,5 @@
 import { ColorFamily } from "@/types"
+import { ICON_SIZE_DEFAULT } from "@/utils"
 import {
   Box,
   Button,
@@ -7,6 +8,7 @@ import {
   Stack,
   Text,
 } from "@mantine/core"
+import { upperFirst } from "@mantine/hooks"
 import { ScanEye, Settings } from "tabler-icons-react"
 
 interface Props {
@@ -25,7 +27,7 @@ const Card = (props: Props) => {
     <MantineCard shadow="sm" padding="lg" radius="md" withBorder>
       <Stack>
         <Box>
-          <Text weight={500}>{name}</Text>
+          <Text weight={500}>{upperFirst(name)}</Text>
           <Text c="dimmed">{description}</Text>
         </Box>
 
@@ -34,7 +36,7 @@ const Card = (props: Props) => {
             variant="outline"
             onClick={actionSecondary}
             color={colorFamily}
-            rightIcon={<ScanEye size="1.3rem" />}
+            rightIcon={<ScanEye size={ICON_SIZE_DEFAULT} />}
           >
             Bannière
           </Button>
@@ -42,7 +44,7 @@ const Card = (props: Props) => {
             variant="filled"
             onClick={actionPrimary}
             color={colorFamily}
-            rightIcon={<Settings size="1.3rem" />}
+            rightIcon={<Settings size={ICON_SIZE_DEFAULT} />}
           >
             Paramètrages
           </Button>
