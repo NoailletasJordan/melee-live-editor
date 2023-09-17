@@ -1,5 +1,6 @@
 import SubTitle from "@/components/Layout/components/SubTitle/index"
 import TooltipWrapper from "@/components/Layout/components/TooltipWrapper"
+import { IIntervenant } from "@/types"
 import {
   Box,
   Card,
@@ -10,22 +11,20 @@ import {
   Switch,
   Text,
 } from "@mantine/core"
-import { useDisclosure } from "@mantine/hooks"
 import { startCase } from "lodash"
+import { Fragment } from "react"
 
-const BannerSection = () => {
-  const [preventLinebreak, { toggle: togglePreventLinebreak }] =
-    useDisclosure(true)
+interface Props {
+  togglePreventLinebreak: () => void
+  preventLinebreak: boolean
+  intervenants: IIntervenant[]
+}
 
-  const dummy = [
-    { name: "georges Musket", company: "Tesla" },
-    { name: "geo b ", company: "Tesla" },
-    { name: "georges Musket ", company: "Tesla" },
-    { name: "Pascal Azema", company: "Tesla" },
-    { name: "georges Musket", company: "Tesla" },
-    { name: "georges Musket", company: "Tesla" },
-  ]
-
+const BannerSection = ({
+  intervenants,
+  togglePreventLinebreak,
+  preventLinebreak,
+}: Props) => {
   return (
     <Card withBorder shadow="sm" radius="md">
       <Stack>
@@ -47,8 +46,8 @@ const BannerSection = () => {
           <Divider size="xl" miw={"2rem"} />
           <ScrollArea type="auto" offsetScrollbars>
             <Group noWrap>
-              {dummy.map(({ name, company }, index) => (
-                <>
+              {intervenants.map(({ name, company, id }, index) => (
+                <Fragment key={id}>
                   {!!index && (
                     <Divider orientation="vertical" mt={"lg"} mah={"5rem"} />
                   )}
@@ -65,7 +64,7 @@ const BannerSection = () => {
                       {company}
                     </Text>
                   </Box>
-                </>
+                </Fragment>
               ))}
             </Group>
           </ScrollArea>

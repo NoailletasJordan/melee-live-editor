@@ -58,7 +58,7 @@ const IntervenantColor = () => {
       setColorsConfig({ ...colorsConfig, [selectedColorField]: newColor })
     }
 
-  const submitter = async () => {
+  const handleSubmit = async () => {
     setIsLoading(true)
     await updateIntervenantColor({
       data: colorsConfig[selectedColorField],
@@ -95,7 +95,7 @@ const IntervenantColor = () => {
       >
         <IntervenantColorContent
           disableConfirm={!currentEntryIsValid()}
-          onConfirm={submitter}
+          onConfirm={handleSubmit}
           handleChangeColor={updateColorSettings(selectedColorField)}
           color={colorsConfig[selectedColorField]}
           colorField={selectedColorField}

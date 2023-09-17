@@ -36,12 +36,7 @@ export interface IRoomData {
     author: string
     message: string
   }
-  intervenants: {
-    company: string
-    hide: boolean
-    id: string
-    name: string
-  }[]
+  intervenants: IIntervenant[]
   isAsk: boolean
   name: string
   open: boolean
@@ -49,4 +44,11 @@ export interface IRoomData {
   colorFamily: ColorFamily
   description: string
   allowIntervenantNamesLinebreak: boolean
+}
+
+export interface IIntervenant {
+  company: string
+  hide: boolean
+  id: string
+  name: string
 }

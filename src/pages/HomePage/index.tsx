@@ -20,8 +20,8 @@ const GRID_RESPONSIVE = [
 const HomePage = ({ roomsWithId, isLoading }: Props) => {
   const navigate = useNavigate()
 
-  const LoadingComponents = [...Array(6)].map(() => (
-    <Skeleton height={100} radius="md" />
+  const LoadingComponents = [...Array(6)].map((_, index) => (
+    <Skeleton key={index} height={100} radius="md" />
   ))
 
   return (
