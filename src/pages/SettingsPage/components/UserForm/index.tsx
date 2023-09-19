@@ -14,10 +14,9 @@ import { isNotEmpty, useForm } from "@mantine/form"
 import { useTimeout } from "@mantine/hooks"
 import { useRef, useState } from "react"
 import { CircleCheck, UserPlus } from "tabler-icons-react"
-import { v4 as uuidv4 } from "uuid"
 
 interface Props {
-  addIntervenant: (intervenant: IIntervenant) => void
+  addIntervenant: (intervenant: Pick<IIntervenant, "name" | "company">) => void
 }
 
 const DURATION_INTERVENANT_JUST_ADDED_MS = 2500
@@ -38,14 +37,8 @@ const UserForm = ({ addIntervenant }: Props) => {
   const [intervenantJustBeenAdded, setIntervenantJustBeenAdded] =
     useState(false)
 
-  const handleSubmit = (
-    partialIntervenant: Pick<IIntervenant, "name" | "company">
-  ) => {
-    const additionnalKeys = {
-      id: uuidv4(),
-      hide: true,
-    }
-    addIntervenant({ ...partialIntervenant, ...additionnalKeys })
+  const handleSubmit = (formValues: Pick<IIntervenant, "name" | "company">) => {
+    addIntervenant(formValues)
     form.reset()
     ref.current?.focus()
     setIntervenantJustBeenAdded(true)

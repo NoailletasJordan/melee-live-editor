@@ -6,6 +6,7 @@ import { upperFirst, useListState, useMediaQuery } from "@mantine/hooks"
 import { Unsubscribe } from "firebase/database"
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
+import { v4 as uuidv4 } from "uuid"
 import BannerSection from "./components/BannerSection"
 import Board from "./components/Board/index"
 import UserForm from "./components/UserForm/index"
@@ -47,6 +48,16 @@ const SettingsPage = () => {
     gap: "1rem",
   }
 
+  const addIntervenant = (
+    partialIntervenant: Pick<IIntervenant, "name" | "company">
+  ) => {
+    const additionnalInitialValues = {
+      id: uuidv4(),
+      hide: true,
+    }
+    handlers.prepend({ ...partialIntervenant, ...additionnalInitialValues })
+  }
+
   return (
     <Stack>
       {!roomId ? (
@@ -58,7 +69,7 @@ const SettingsPage = () => {
       <Stack>
         <Box style={gridStyle}>
           <Group>
-            <UserForm addIntervenant={handlers.prepend} />
+            <UserForm addIntervenant={addIntervenant} />
             {!belowBreakpoint && <Divider orientation="vertical" />}
           </Group>
           <BannerSection
