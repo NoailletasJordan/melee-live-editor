@@ -1,3 +1,4 @@
+import BasicCard from "@/components/Layout/components/BasicCard"
 import SubTitle from "@/components/Layout/components/SubTitle/index"
 import { IIntervenant } from "@/types"
 import { ICON_SIZE_DEFAULT } from "@/utils"
@@ -5,7 +6,6 @@ import {
   Box,
   Button,
   ButtonProps,
-  Card,
   Group,
   Stack,
   TextInput,
@@ -70,7 +70,7 @@ const UserForm = ({ addIntervenant }: Props) => {
   )
 
   return (
-    <Card withBorder shadow="sm" radius="md" mih={228}>
+    <BasicCard mih={228}>
       <Box component="form" onSubmit={form.onSubmit(handleSubmit)}>
         <Stack spacing={"xs"}>
           <SubTitle>Nouvel intervenant</SubTitle>
@@ -88,7 +88,7 @@ const UserForm = ({ addIntervenant }: Props) => {
           </Group>
         </Stack>
       </Box>
-    </Card>
+    </BasicCard>
   )
 }
 

@@ -48,7 +48,6 @@ export interface IRoomData {
 
 export interface IIntervenant {
   company: string
-  hide: boolean
   id: string
   name: string
 }

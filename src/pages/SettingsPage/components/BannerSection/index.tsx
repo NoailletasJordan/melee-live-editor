@@ -1,9 +1,9 @@
+import BasicCard from "@/components/Layout/components/BasicCard"
 import SubTitle from "@/components/Layout/components/SubTitle/index"
 import TooltipWrapper from "@/components/Layout/components/TooltipWrapper"
 import { IIntervenant } from "@/types"
 import {
   Box,
-  Card,
   Divider,
   Group,
   ScrollArea,
@@ -26,7 +26,7 @@ const BannerSection = ({
   preventLinebreak,
 }: Props) => {
   return (
-    <Card withBorder shadow="sm" radius="md">
+    <BasicCard>
       <Stack>
         <Group position="apart">
           <SubTitle>Vue Bannière</SubTitle>
@@ -70,7 +70,7 @@ const BannerSection = ({
           </ScrollArea>
         </Box>
       </Stack>
-    </Card>
+    </BasicCard>
   )
 }
 

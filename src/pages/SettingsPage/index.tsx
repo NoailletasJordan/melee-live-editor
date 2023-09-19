@@ -53,7 +53,6 @@ const SettingsPage = () => {
   ) => {
     const additionnalInitialValues = {
       id: uuidv4(),
-      hide: true,
     }
     handlers.prepend({ ...partialIntervenant, ...additionnalInitialValues })
   }

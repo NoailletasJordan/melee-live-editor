@@ -1,13 +1,7 @@
+import BasicCard from "@/components/Layout/components/BasicCard"
 import { ColorFamily } from "@/types"
 import { ICON_SIZE_DEFAULT } from "@/utils"
-import {
-  Box,
-  Button,
-  Group,
-  Card as MantineCard,
-  Stack,
-  Text,
-} from "@mantine/core"
+import { Box, Button, Group, Stack, Text } from "@mantine/core"
 import { upperFirst } from "@mantine/hooks"
 import { ScanEye, Settings } from "tabler-icons-react"
 
@@ -24,7 +18,7 @@ const Card = (props: Props) => {
     props
 
   return (
-    <MantineCard shadow="sm" padding="lg" radius="md" withBorder>
+    <BasicCard>
       <Stack>
         <Box>
           <Text weight={500}>{upperFirst(name)}</Text>
@@ -50,7 +44,7 @@ const Card = (props: Props) => {
           </Button>
         </Group>
       </Stack>
-    </MantineCard>
+    </BasicCard>
   )
 }
 
