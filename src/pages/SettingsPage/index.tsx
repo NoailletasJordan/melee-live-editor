@@ -1,9 +1,10 @@
 import Title from "@/components/Layout/components/Title"
-import { subscribeToRoom } from "@/firebase"
-import { IIntervenant } from "@/types"
+import { subscribeToRoomGroups } from "@/firebase"
+import { IGroup, IIntervenant } from "@/types"
 import { Box, Divider, Group, Skeleton, Stack } from "@mantine/core"
-import { upperFirst, useListState, useMediaQuery } from "@mantine/hooks"
+import { upperFirst, useMediaQuery } from "@mantine/hooks"
 import { Unsubscribe } from "firebase/database"
+import { cloneDeep, set } from "lodash"
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
@@ -18,15 +19,15 @@ const SettingsPage = () => {
   const { roomId } = useParams()
   const belowBreakpoint = useMediaQuery(`(max-width: ${BREAKPOINT_MAX_WIDTH})`)
   const [preventLinebreak, setPreventLinebreak] = useState(false)
-  const [values, handlers] = useListState<IIntervenant>([])
+  const [groups, setGroups] = useState<IGroup[]>([])
 
   useEffect(() => {
     roomId &&
       (async () => {
-        const unsubscriber = await subscribeToRoom({
+        const unsubscriber = await subscribeToRoomGroups({
           roomId,
-          onValueUpdate: (data) => {
-            handlers.setState(data.intervenants)
+          onValueUpdate: (groupsFromDatabase) => {
+            setGroups(groupsFromDatabase || [])
           },
         })
 
@@ -51,11 +52,26 @@ const SettingsPage = () => {
   const addIntervenant = (
     partialIntervenant: Pick<IIntervenant, "name" | "company">
   ) => {
-    const additionnalInitialValues = {
+    const newIntervenant = {
       id: uuidv4(),
+      ...partialIntervenant,
     }
-    handlers.prepend({ ...partialIntervenant, ...additionnalInitialValues })
+    const newFirstGroupIntervenants = [
+      newIntervenant,
+      ...(groups[0].intervenants || []),
+    ]
+    // Create intervenants if dont exist
+    const newGroups = set(
+      cloneDeep(groups),
+      "[0].intervenants",
+      newFirstGroupIntervenants
+    )
+    setGroups(newGroups)
   }
+
+  const nonHiddenIntervenants = groups
+    .filter(({ hidden }) => !hidden)
+    .flatMap(({ intervenants }) => intervenants || [])
 
   return (
     <Stack>
@@ -72,7 +88,7 @@ const SettingsPage = () => {
             {!belowBreakpoint && <Divider orientation="vertical" />}
           </Group>
           <BannerSection
-            intervenants={values}
+            intervenants={nonHiddenIntervenants}
             preventLinebreak={preventLinebreak}
             togglePreventLinebreak={togglePreventLinebreak}
           />
@@ -80,7 +96,7 @@ const SettingsPage = () => {
       </Stack>
 
       <Divider label="Organisation des intervenants" labelPosition="center" />
-      <Board />
+      <Board groups={groups} setGroups={setGroups} />
     </Stack>
   )
 }

@@ -32,19 +32,21 @@ export interface IIntervenantColors {
 }
 
 export interface IRoomData {
-  ask: {
-    author: string
-    message: string
-  }
-  intervenants: IIntervenant[]
-  isAsk: boolean
   name: string
-  open: boolean
-  readError: boolean
   colorFamily: ColorFamily
   description: string
-  allowIntervenantNamesLinebreak: boolean
+  preventNamesLineBreak: boolean
+  groups?: IGroup[]
 }
+
+export interface IGroup {
+  id: string
+  title: string
+  hidden: boolean
+  intervenants: IIntervenant[]
+}
+
+export type IGroupWithIntervenants = Required<IGroup>
 
 export interface IIntervenant {
   company: string

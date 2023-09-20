@@ -30,12 +30,15 @@ const subscribeToIntervenantColors = async (
   )
 }
 
-interface ISubscribeToRoom {
-  onValueUpdate: (roomData: IRoomData) => void
+interface IsubscribeToRoomGroups {
+  onValueUpdate: (groups: IRoomData["groups"]) => void
   roomId: string
 }
-const subscribeToRoom = async ({ onValueUpdate, roomId }: ISubscribeToRoom) => {
-  const starCountRef = ref(db, `/salles/${roomId}`)
+const subscribeToRoomGroups = async ({
+  onValueUpdate,
+  roomId,
+}: IsubscribeToRoomGroups) => {
+  const starCountRef = ref(db, `/salles/${roomId}/groups`)
   return await onValue(starCountRef, (snapshot) =>
     onValueUpdate(snapshot.val())
   )
@@ -52,6 +55,10 @@ const updateIntervenantColor = ({
 export {
   getAllDatabase,
   subscribeToIntervenantColors,
-  subscribeToRoom,
+  subscribeToRoomGroups,
   updateIntervenantColor,
 }
+
+// temp
+// const tempsUpdateGroups = () => set(ref(db, `/salles/hall/groups`), data)
+// tempsUpdateGroups()

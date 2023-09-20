@@ -1,5 +1,5 @@
 import BasicCard from "@/components/Layout/components/BasicCard"
-import { IIntervenant } from "@/types"
+import { IGroup, IIntervenant } from "@/types"
 import { Box, Flex, ScrollArea } from "@mantine/core"
 import {
   cloneDeep,
@@ -7,12 +7,10 @@ import {
   findIndex as lodashFindIndex,
   set,
 } from "lodash"
-import { useState } from "react"
 import { DragDropContext, DropResult } from "react-beautiful-dnd"
 import DraggableGroup from "./components/DraggableGroup"
 import DraggableIntervenant from "./components/DraggableIntervenant"
 import DroppableWrapper from "./components/DroppableWrapper"
-import { data } from "./temp"
 
 const insertAtIndex = (arr: any[], index: number, newItem: any) => [
   ...arr.slice(0, index),
@@ -24,13 +22,13 @@ const removeAtIndex = (array: any[], indexToRemove: number) =>
   array.filter((_, index) => indexToRemove !== index)
 
 interface IReorderGroups {
-  initialGroups: typeof data
+  initialGroups: IGroup[]
   dropResult: DropResult
 }
 const reorderGroups = ({
   initialGroups,
   dropResult: { source, destination },
-}: IReorderGroups): typeof data => {
+}: IReorderGroups): IGroup[] => {
   if (!destination) return initialGroups
 
   const clonedGroups = cloneDeep(initialGroups)
@@ -46,13 +44,13 @@ const reorderGroups = ({
 }
 
 interface IRemoveIntervenantFromGroupsById {
-  groups: typeof data
+  groups: IGroup[]
   id: string
 }
 const removeIntervenantFromGroupsById = ({
   groups,
   id,
-}: IRemoveIntervenantFromGroupsById): typeof data =>
+}: IRemoveIntervenantFromGroupsById): IGroup[] =>
   groups.map((group) => ({
     ...group,
     intervenants: group.intervenants.filter(
@@ -61,7 +59,7 @@ const removeIntervenantFromGroupsById = ({
   }))
 
 interface IInsertIntervenantInGroup {
-  groups: typeof data
+  groups: IGroup[]
   intervenant: any
   groupIndex: number
   intervenantIndex: number
@@ -71,7 +69,7 @@ const insertIntervenantInGroup = ({
   intervenant,
   groupIndex,
   intervenantIndex,
-}: IInsertIntervenantInGroup): typeof data =>
+}: IInsertIntervenantInGroup): IGroup[] =>
   set(
     cloneDeep(groups),
     `[${groupIndex}].intervenants`,
@@ -86,7 +84,7 @@ const reorderIntervernants = ({
   initialGroups,
   dropResult: { destination, draggableId },
 }: {
-  initialGroups: typeof data
+  initialGroups: IGroup[]
   dropResult: DropResult
 }) => {
   if (!destination) return initialGroups
@@ -113,9 +111,12 @@ const reorderIntervernants = ({
 
   return reorderedGroups
 }
+interface Props {
+  groups: IGroup[]
+  setGroups: (groups: IGroup[]) => void
+}
 
-const Board = () => {
-  const [groups, setGroups] = useState(data)
+const Board = ({ groups, setGroups }: Props) => {
   const onDragEnd = (dropResult: DropResult) => {
     const functionsParameters = { dropResult, initialGroups: groups }
     const reorderFunctions = {
@@ -132,7 +133,7 @@ const Board = () => {
 
   const handleGroupUpdate =
     (groupIndex: number) =>
-    ({ key, value }: { key: keyof (typeof data)[any]; value: any }) => {
+    ({ key, value }: { key: keyof IGroup; value: any }) => {
       const newGroups = set(cloneDeep(groups), `[${groupIndex}].${key}`, value)
       setGroups(newGroups)
     }

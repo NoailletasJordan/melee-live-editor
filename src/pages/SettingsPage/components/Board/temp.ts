@@ -1,3 +1,4 @@
+// temp
 export const data = [
   {
     id: "g1",
@@ -6,33 +7,8 @@ export const data = [
     intervenants: [
       {
         id: "1",
-        name: "John",
-        company: "ABC Inc.",
-      },
-      {
-        id: "2",
-        name: "Alice",
-        company: "XYZ Corp.",
-      },
-      {
-        id: "3",
-        name: "Bob",
-        company: "DEF Ltd.",
-      },
-      {
-        id: "4",
-        name: "Eve",
-        company: "GHI Co.",
-      },
-      {
-        id: "5",
-        name: "Charlie",
-        company: "LMN Industries",
-      },
-      {
-        id: "6",
-        name: "Grace",
-        company: "JKL Enterprises",
+        name: "Oliver Twitst",
+        company: "MNO Group",
       },
     ],
   },
