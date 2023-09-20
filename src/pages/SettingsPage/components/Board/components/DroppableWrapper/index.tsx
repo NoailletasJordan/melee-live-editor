@@ -16,6 +16,8 @@ const DroppableWrapper = ({
       <div
         ref={providedDroppable.innerRef}
         {...providedDroppable.droppableProps}
+        // https://stackoverflow.com/a/55445514
+        style={{ minHeight: 50 }}
       >
         {children}
         {providedDroppable.placeholder}

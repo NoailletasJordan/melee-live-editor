@@ -4,6 +4,7 @@ import TooltipWrapper from "@/components/Layout/components/TooltipWrapper"
 import { IIntervenant } from "@/types"
 import {
   Box,
+  Center,
   Divider,
   Group,
   ScrollArea,
@@ -42,33 +43,35 @@ const BannerSection = ({
             onChange={togglePreventLinebreak}
           />
         </Group>
-        <Box>
-          <Divider size="xl" miw={"2rem"} />
-          <ScrollArea type="auto" offsetScrollbars>
-            <Group noWrap>
-              {intervenants.map(({ name, company, id }, index) => (
-                <Fragment key={id}>
-                  {!!index && (
-                    <Divider orientation="vertical" mt={"lg"} mah={"5rem"} />
-                  )}
-                  <Box p={"0.5rem"} maw={400}>
-                    <Text
-                      fz={"1.6rem"}
-                      style={{
-                        whiteSpace: !preventLinebreak ? "nowrap" : "normal",
-                      }}
-                    >
-                      {startCase(name)}
-                    </Text>
-                    <Text align="center" fs={"italic"}>
-                      {company}
-                    </Text>
-                  </Box>
-                </Fragment>
-              ))}
-            </Group>
-          </ScrollArea>
-        </Box>
+        <Center>
+          <Box>
+            <Divider size="xl" miw={"2rem"} />
+            <ScrollArea type="auto" offsetScrollbars>
+              <Group noWrap>
+                {intervenants.map(({ name, company, id }, index) => (
+                  <Fragment key={id}>
+                    {!!index && (
+                      <Divider orientation="vertical" mt={"lg"} mah={"5rem"} />
+                    )}
+                    <Box p={"0.5rem"} maw={400}>
+                      <Text
+                        fz={"1.6rem"}
+                        style={{
+                          whiteSpace: !preventLinebreak ? "nowrap" : "normal",
+                        }}
+                      >
+                        {startCase(name)}
+                      </Text>
+                      <Text align="center" fs={"italic"}>
+                        {company}
+                      </Text>
+                    </Box>
+                  </Fragment>
+                ))}
+              </Group>
+            </ScrollArea>
+          </Box>
+        </Center>
       </Stack>
     </BasicCard>
   )

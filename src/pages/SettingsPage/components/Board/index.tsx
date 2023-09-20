@@ -1,5 +1,6 @@
+import BasicCard from "@/components/Layout/components/BasicCard"
 import { IIntervenant } from "@/types"
-import { Flex } from "@mantine/core"
+import { Box, Flex, ScrollArea } from "@mantine/core"
 import {
   cloneDeep,
   find as lodashFind,
@@ -8,7 +9,7 @@ import {
 } from "lodash"
 import { useState } from "react"
 import { DragDropContext, DropResult } from "react-beautiful-dnd"
-import DraggableGroup from "./components/DraggableGroups"
+import DraggableGroup from "./components/DraggableGroup"
 import DraggableIntervenant from "./components/DraggableIntervenant"
 import DroppableWrapper from "./components/DroppableWrapper"
 import { data } from "./temp"
@@ -153,37 +154,80 @@ const Board = () => {
       setGroups(updatedGroups)
     }
 
+  const handleDeleteGroup = (index: number) => () => {
+    setGroups(groups.filter((_, currentIndex) => currentIndex !== index))
+  }
+
+  // Grid used for the scrollArea
+  const gridStyle = {
+    display: "grid",
+    gridTemplateColumns: "100%",
+    gap: "1rem",
+  }
+
+  const handleDeleteIntervenant =
+    ({
+      groupIndex,
+      intervenantIndex,
+    }: {
+      groupIndex: number
+      intervenantIndex: number
+    }) =>
+    () => {
+      const newIntervenant = groups[groupIndex].intervenants.filter(
+        (_, index) => index !== intervenantIndex
+      )
+      const newGroups = set(
+        cloneDeep(groups),
+        `[${groupIndex}].intervenants`,
+        newIntervenant
+      )
+      setGroups(newGroups)
+    }
+
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <DroppableWrapper
-        droppableId="all-collumns"
-        direction="horizontal"
-        type="group"
-      >
-        <Flex align="flex-start">
-          {groups.map((group, index2) => (
-            <DraggableGroup
-              key={group.id}
-              group={group}
-              handleGroupUpdate={handleGroupUpdate(index2)}
-              index={index2}
-            >
-              {group.intervenants.map((intervenant, index) => (
-                <DraggableIntervenant
-                  key={intervenant.id}
-                  intervenant={intervenant}
-                  index={index}
-                  handleIntervenantUpdate={handleIntervenantUpdate({
-                    groupIndex: index2,
-                    intervenantIndex: index,
-                  })}
-                />
-              ))}
-            </DraggableGroup>
-          ))}
-        </Flex>
-      </DroppableWrapper>
-    </DragDropContext>
+    <BasicCard>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <DroppableWrapper
+          droppableId="all-collumns"
+          direction="horizontal"
+          type="group"
+        >
+          <Box style={gridStyle}>
+            <ScrollArea type="auto" offsetScrollbars>
+              <Flex wrap={"nowrap"} justify="flex-start" align="flex-start">
+                {groups.map((group, groupIndex) => (
+                  <DraggableGroup
+                    hideDeleteButton={groups.length === 1}
+                    key={group.id}
+                    handleDelete={handleDeleteGroup(groupIndex)}
+                    group={group}
+                    handleGroupUpdate={handleGroupUpdate(groupIndex)}
+                    index={groupIndex}
+                  >
+                    {group.intervenants.map((intervenant, intervenantIndex) => (
+                      <DraggableIntervenant
+                        handleDeleteIntervenant={handleDeleteIntervenant({
+                          groupIndex,
+                          intervenantIndex,
+                        })}
+                        key={intervenant.id}
+                        intervenant={intervenant}
+                        index={intervenantIndex}
+                        handleIntervenantUpdate={handleIntervenantUpdate({
+                          groupIndex: groupIndex,
+                          intervenantIndex: intervenantIndex,
+                        })}
+                      />
+                    ))}
+                  </DraggableGroup>
+                ))}
+              </Flex>
+            </ScrollArea>
+          </Box>
+        </DroppableWrapper>
+      </DragDropContext>
+    </BasicCard>
   )
 }
 

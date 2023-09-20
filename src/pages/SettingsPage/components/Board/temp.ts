@@ -58,4 +58,28 @@ export const data = [
       },
     ],
   },
+  {
+    id: "g3",
+    title: "group3",
+    hidden: true,
+    intervenants: [
+      {
+        id: "13",
+        name: "BOB",
+        company: "MNO Group",
+      },
+    ],
+  },
+  {
+    id: "g4",
+    title: "group4",
+    hidden: true,
+    intervenants: [
+      {
+        id: "14",
+        name: "Mergez",
+        company: "MNO Group",
+      },
+    ],
+  },
 ]
