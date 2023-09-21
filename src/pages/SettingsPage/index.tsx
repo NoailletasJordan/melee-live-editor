@@ -1,5 +1,5 @@
 import Title from "@/components/Layout/components/Title"
-import { subscribeToRoomGroups } from "@/firebase"
+import { subscribeToRoom } from "@/firebase"
 import { IGroup, IIntervenant } from "@/types"
 import { Box, Divider, Group, Skeleton, Stack } from "@mantine/core"
 import { upperFirst, useMediaQuery } from "@mantine/hooks"
@@ -24,10 +24,10 @@ const SettingsPage = () => {
   useEffect(() => {
     roomId &&
       (async () => {
-        const unsubscriber = await subscribeToRoomGroups({
+        const unsubscriber = await subscribeToRoom({
           roomId,
-          onValueUpdate: (groupsFromDatabase) => {
-            setGroups(groupsFromDatabase || [])
+          onValueUpdate: (roomData) => {
+            setGroups(roomData.groups || [])
           },
         })
 
@@ -37,9 +37,7 @@ const SettingsPage = () => {
           unsubscriberRef.current?.()
         }
       })()
-    // False positive, do not include "handlers"
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [roomId])
 
   const togglePreventLinebreak = () => setPreventLinebreak(!preventLinebreak)
 

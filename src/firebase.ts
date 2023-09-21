@@ -1,64 +1,76 @@
+// Import the functions you need from the SDKs you need
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
 import { initializeApp } from "firebase/app"
-import { get, getDatabase, onValue, ref, set } from "firebase/database"
+import {
+  collection,
+  doc,
+  getDocs,
+  getFirestore,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore"
 import { IDatabase, IIntervenantColors, IRoomData } from "./types"
 
-const config = {
-  apiKey: "AIzaSyAKnmClusQg4EMcdGz12I7QJww8MUwIzOs",
-  authDomain: "editeur-d-habillage-live.firebaseapp.com",
-  databaseURL: "https://editeur-d-habillage-live.firebaseio.com",
-  projectId: "editeur-d-habillage-live",
-  storageBucket: "editeur-d-habillage-live.appspot.com",
-  messagingSenderId: "999195209442",
-  appId: "1:999195209442:web:b3e0ea30058ecd1c6df8bb",
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: "view-editor-live.firebaseapp.com",
+  projectId: "view-editor-live",
+  storageBucket: "view-editor-live.appspot.com",
+  messagingSenderId: "126278027442",
+  appId: "1:126278027442:web:2474fdef70e6106077a1ab",
+  measurementId: "G-3GZGE4RCBE",
 }
 
-const app = initializeApp(config)
-const db = getDatabase(app)
-
-const getAllDatabase = async (): Promise<IDatabase> => {
-  const starCountRef = ref(db, "/")
-  const snapshot = await get(starCountRef)
-  return snapshot.val()
-}
+const app2 = initializeApp(firebaseConfig)
+const db = getFirestore(app2)
 
 const subscribeToIntervenantColors = async (
   onValueUpdate: (colorsConfig: IIntervenantColors) => void
 ) => {
-  const starCountRef = ref(db, "/configIntervenant/colorSettings")
-  return await onValue(starCountRef, (snapshot) =>
-    onValueUpdate(snapshot.val())
+  const unsubscriber = onSnapshot(doc(db, "config", "intervenants"), (doc) =>
+    onValueUpdate(doc.data() as IIntervenantColors)
   )
+
+  return unsubscriber
 }
 
-interface IsubscribeToRoomGroups {
-  onValueUpdate: (groups: IRoomData["groups"]) => void
-  roomId: string
-}
-const subscribeToRoomGroups = async ({
-  onValueUpdate,
-  roomId,
-}: IsubscribeToRoomGroups) => {
-  const starCountRef = ref(db, `/salles/${roomId}/groups`)
-  return await onValue(starCountRef, (snapshot) =>
-    onValueUpdate(snapshot.val())
-  )
+const getRooms = async (): Promise<IDatabase["rooms"]> => {
+  const querySnapshot = await getDocs(collection(db, "rooms"))
+  const rooms: { [x: string]: any } = {}
+  querySnapshot.forEach((doc) => {
+    rooms[doc.id] = doc.data()
+  })
+  return rooms as IDatabase["rooms"]
 }
 
-const updateIntervenantColor = ({
+const updateIntervenantColor = async ({
   data,
   colorField,
 }: {
   data: string
   colorField: keyof IIntervenantColors
-}) => set(ref(db, `/configIntervenant/colorSettings/${colorField}`), data)
-
-export {
-  getAllDatabase,
-  subscribeToIntervenantColors,
-  subscribeToRoomGroups,
-  updateIntervenantColor,
+}) => {
+  const ref = doc(db, "config", "intervenants")
+  await updateDoc(ref, { [colorField]: data })
 }
 
-// temp
-// const tempsUpdateGroups = () => set(ref(db, `/salles/hall/groups`), data)
-// tempsUpdateGroups()
+interface IsubscribeToRoom {
+  onValueUpdate: (groups: IRoomData) => void
+  roomId: string
+}
+const subscribeToRoom = async ({ onValueUpdate, roomId }: IsubscribeToRoom) => {
+  const unsubscriber = onSnapshot(doc(db, "rooms", roomId), (doc) =>
+    onValueUpdate(doc.data() as IRoomData)
+  )
+
+  return unsubscriber
+}
+
+export {
+  getRooms,
+  subscribeToIntervenantColors,
+  subscribeToRoom,
+  updateIntervenantColor,
+}

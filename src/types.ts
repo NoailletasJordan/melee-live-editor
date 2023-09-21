@@ -20,10 +20,10 @@ export type ColorFamily =
   | "orange"
 
 export interface IDatabase {
-  configIntervenant: {
-    colorSettings: IIntervenantColors
+  config: {
+    intervenants: IIntervenantColors
   }
-  salles: Record<RoomId, IRoomData>
+  rooms: Record<RoomId, IRoomData>
 }
 
 export interface IIntervenantColors {

@@ -3,26 +3,25 @@ import { MantineProvider } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
 import { useEffect, useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import Layout from "./components/Layout/index"
-import "./firebase.ts"
-import { getAllDatabase } from "./firebase.ts"
+import Layout from "./components/Layout/index.tsx"
+import { getRooms } from "./firebase.ts"
 import BannerPage from "./pages/BannerPage/index.tsx"
 import SettingsPage from "./pages/SettingsPage/index.tsx"
 import { IDatabase } from "./types.ts"
 
 const App = () => {
-  const [allData, setAllData] = useState<IDatabase>()
+  const [rooms, setRooms] = useState<IDatabase["rooms"]>({})
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     ;(async () => {
-      const res = await getAllDatabase()
+      const res = await getRooms()
       setIsLoading(false)
-      setAllData(res)
+      setRooms(res)
     })()
   }, [])
 
-  const roomsDataWithId = Object.entries(allData?.salles || {}).map(
+  const roomsDataWithId = Object.entries(rooms || {}).map(
     ([roomId, roomData]) => ({
       id: roomId,
       ...roomData,
