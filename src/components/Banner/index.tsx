@@ -20,7 +20,7 @@ interface Props {
   noHeadband?: boolean
 }
 
-const HEADBAND_WIDTH = 350
+const HEADBAND_WIDTH = 300
 const HEADBAND_INTERVAL_TRIGGERED_EVERY_MS = 30000
 const HEADBAND_INTERVAL_STAYS_OPEN_MS = 8000
 
@@ -28,61 +28,56 @@ const Banner = ({ intervenants, preventLinebreak, noHeadband }: Props) => {
   const colorsContext = useContext(ColorsContext)
 
   const CustomDivider = () => (
-    <Box
-      miw={HEADBAND_WIDTH}
-      w={"100%"}
-      h={5}
-      bg={colorsContext.colors.nameColor}
-    />
+    <Box miw={HEADBAND_WIDTH} h={5} bg={colorsContext.colors.nameColor} />
   )
 
   return (
     <Box>
       {!noHeadband && <HeadBand />}
-
-      <Stack
-        style={{ overflow: "hidden" }}
-        ff="font-family: 'Lato', sans-serif;"
-      >
-        <CustomDivider />
-
-        <ScrollArea type="auto" offsetScrollbars>
-          <Group noWrap>
-            {intervenants.map(({ name, company, id }, index) => (
-              <Fragment key={id}>
-                {!!index && (
-                  <Divider
-                    color={colorsContext.colors.nameColor}
-                    orientation="vertical"
-                    mt={"lg"}
-                    mah={"5rem"}
-                  />
-                )}
-                <Box p={"0.5rem"} maw={400}>
-                  <Text
-                    fz={22}
-                    fw={600}
-                    color={colorsContext.colors.nameColor}
-                    style={{
-                      whiteSpace: preventLinebreak ? "nowrap" : "normal",
-                    }}
-                  >
-                    {startCase(name)}
-                  </Text>
-                  <Text
-                    color={colorsContext.colors.companyColor}
-                    style={{
-                      whiteSpace: preventLinebreak ? "nowrap" : "normal",
-                    }}
-                  >
-                    {company}
-                  </Text>
-                </Box>
-              </Fragment>
-            ))}
-          </Group>
-        </ScrollArea>
-      </Stack>
+      <Group position="center">
+        <Stack
+          style={{ overflow: "hidden" }}
+          ff="font-family: 'Lato', sans-serif;"
+        >
+          <CustomDivider />
+          <ScrollArea type="auto" offsetScrollbars>
+            <Group noWrap position="center">
+              {intervenants.map(({ name, company, id }, index) => (
+                <Fragment key={id}>
+                  {!!index && (
+                    <Divider
+                      color={colorsContext.colors.nameColor}
+                      orientation="vertical"
+                      mt={"lg"}
+                      mah={"5rem"}
+                    />
+                  )}
+                  <Box p={"0.5rem"} maw={400}>
+                    <Text
+                      fz={22}
+                      fw={600}
+                      color={colorsContext.colors.nameColor}
+                      style={{
+                        whiteSpace: preventLinebreak ? "nowrap" : "normal",
+                      }}
+                    >
+                      {startCase(name)}
+                    </Text>
+                    <Text
+                      color={colorsContext.colors.companyColor}
+                      style={{
+                        whiteSpace: preventLinebreak ? "nowrap" : "normal",
+                      }}
+                    >
+                      {company}
+                    </Text>
+                  </Box>
+                </Fragment>
+              ))}
+            </Group>
+          </ScrollArea>
+        </Stack>
+      </Group>
     </Box>
   )
 }

@@ -11,10 +11,22 @@ interface Props extends NavbarProps {
 
 const Layout = ({ children, ...navbarProps }: Props) => {
   const location = useLocation()
-  const noNavBar = location.pathname.includes("/banner")
+  const noLayout = location.pathname.includes("/banner")
 
   return (
-    <AppShell navbar={!noNavBar ? <Navbar {...navbarProps} /> : undefined}>
+    <AppShell
+      styles={(theme) => ({
+        main: {
+          backgroundColor:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[8]
+              : noLayout
+              ? ""
+              : "#F5F5F5",
+        },
+      })}
+      navbar={!noLayout ? <Navbar {...navbarProps} /> : undefined}
+    >
       <Group position="center" grow>
         <Box maw={1300}>
           <ErrorBoundary

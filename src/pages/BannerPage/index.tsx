@@ -1,7 +1,7 @@
 import Banner from "@/components/Banner"
 import { subscribeToRoom } from "@/firebase"
 import { IRoomData } from "@/types"
-import { Affix, Box } from "@mantine/core"
+import { Affix } from "@mantine/core"
 import { Unsubscribe } from "firebase/database"
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
@@ -42,12 +42,10 @@ const BannerPage = () => {
 
   return (
     <Affix position={{ bottom: 70, left: 70 }}>
-      <Box>
-        <Banner
-          intervenants={nonHiddenIntervenants}
-          preventLinebreak={room.preventNamesLineBreak}
-        />
-      </Box>
+      <Banner
+        intervenants={nonHiddenIntervenants}
+        preventLinebreak={room.preventNamesLineBreak}
+      />
     </Affix>
   )
 }

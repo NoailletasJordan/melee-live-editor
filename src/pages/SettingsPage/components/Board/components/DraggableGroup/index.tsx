@@ -25,6 +25,8 @@ interface Props {
   hideDeleteButton: boolean
 }
 
+const BACKGROUND_COLOR = "rgba(204, 204, 204, 0.7)"
+
 const DraggableGroup = (props: Props) => {
   const { children, handleUpdate, group, index } = props
   const themeIconStyle = {
@@ -40,7 +42,7 @@ const DraggableGroup = (props: Props) => {
   )
 
   const IsShownBadge = (
-    <Badge variant="dot" color="primary">
+    <Badge variant="filled" color="teal">
       Affiché
     </Badge>
   )
@@ -50,7 +52,7 @@ const DraggableGroup = (props: Props) => {
       {({ dragHandleProps, draggableProps, innerRef }) => (
         <DraggableCard
           {...draggableProps}
-          bg={group.hidden ? "#EBEBE4" : undefined}
+          bg={BACKGROUND_COLOR}
           innerRef={innerRef}
           mr={"sm"}
           miw={271}

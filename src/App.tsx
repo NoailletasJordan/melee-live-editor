@@ -1,5 +1,5 @@
 import HomePage from "@/pages/HomePage"
-import { MantineProvider } from "@mantine/core"
+import { MantineProvider, MantineThemeOverride } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
 import { useEffect, useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
@@ -30,7 +30,7 @@ const App = () => {
   )
 
   return (
-    <MantineProvider withGlobalStyles withNormalizeCSS>
+    <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
       <Notifications />
       <ContextWrapper>
         <BrowserRouter>
@@ -56,3 +56,15 @@ const App = () => {
 }
 
 export default App
+
+const theme: MantineThemeOverride = {
+  components: {
+    Navbar: {
+      styles: {
+        root: {
+          backgroundColor: "#F0F0F0",
+        },
+      },
+    },
+  },
+}

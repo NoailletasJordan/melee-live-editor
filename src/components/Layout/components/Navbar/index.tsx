@@ -9,6 +9,7 @@ import {
   Stack,
 } from "@mantine/core"
 import { upperFirst } from "@mantine/hooks"
+import { IconDoorExit, IconHome2 } from "@tabler/icons-react"
 import { useLocation, useNavigate } from "react-router-dom"
 
 export interface Props {
@@ -34,9 +35,10 @@ const Navbar = ({ navbarConfig, isLoading }: Props) => {
         <MantineNavbar.Section>
           <NavLink
             label="Vue d'ensemble"
-            variant="light"
             active={location.pathname === "/"}
             onClick={() => navigate("/")}
+            variant="filled"
+            icon={<IconHome2 size="1rem" />}
           />
         </MantineNavbar.Section>
         <Divider my="sm" opacity={0.5} />
@@ -53,6 +55,8 @@ const Navbar = ({ navbarConfig, isLoading }: Props) => {
                   active={location.pathname === navbarPath}
                   label={upperFirst(name)}
                   color={colorFamily}
+                  variant="filled"
+                  icon={<IconDoorExit size="1rem" />}
                 />
               )
             })

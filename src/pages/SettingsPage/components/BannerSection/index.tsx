@@ -3,7 +3,7 @@ import BasicCard from "@/components/Layout/components/BasicCard"
 import SubTitle from "@/components/SubTitle/index"
 import TooltipWrapper from "@/components/TooltipWrapper"
 import { IIntervenant } from "@/types"
-import { Center, Group, Skeleton, Stack, Switch } from "@mantine/core"
+import { Group, Skeleton, Stack, Switch } from "@mantine/core"
 
 interface Props {
   togglePreventLinebreak: () => void
@@ -40,13 +40,11 @@ const BannerSection = ({
       {isLoading ? (
         <Loader />
       ) : (
-        <Center>
-          <Banner
-            intervenants={intervenants}
-            preventLinebreak={preventLinebreak}
-            noHeadband
-          />
-        </Center>
+        <Banner
+          intervenants={intervenants}
+          preventLinebreak={preventLinebreak}
+          noHeadband
+        />
       )}
     </Stack>
   </BasicCard>

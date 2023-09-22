@@ -143,11 +143,11 @@ const SettingsPage = () => {
         {!roomId ? (
           <Skeleton height={8} h={"2rem"} maw={"16rem"} />
         ) : (
-          <Group>
+          <Group position="apart">
             <Title>{`Paramètres de la page ${upperFirst(roomId || "")}`}</Title>
             <Button
               onClick={() => navigate(getRoomBannerLink(roomId))}
-              variant="light"
+              variant="outline"
               rightIcon={<IconExternalLink size={14} />}
             >
               Bannière
