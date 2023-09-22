@@ -18,7 +18,7 @@
     "@tabler/icons-react": "^2.34.0",
     "firebase": "^10.4.0",
     "lodash": "^4.17.21",
-    "pick-random-weighted": "^2.0.0",
+    "random-seed-weighted-chooser": "^1.1.5",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",

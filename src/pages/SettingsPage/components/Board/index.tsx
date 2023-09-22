@@ -145,8 +145,13 @@ const Board = ({ groups, setGroups, isLoading }: Props) => {
   const handleGroupUpdateLocally =
     (groupIndex: number) =>
     ({ key, value }: { key: keyof IGroup; value: any }) => {
-      const newGroups = set(cloneDeep(groups), `[${groupIndex}].${key}`, value)
-      setGroups(newGroups)
+      let modifyGroups = cloneDeep(groups)
+      // special case - allow only group not hidden
+      if (key === "hidden") {
+        modifyGroups = modifyGroups.map((group) => ({ ...group, hidden: true }))
+      }
+      modifyGroups = set(modifyGroups, `[${groupIndex}].${key}`, value)
+      setGroups(modifyGroups)
     }
 
   const handleIntervenantUpdateLocally =

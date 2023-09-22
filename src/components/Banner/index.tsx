@@ -20,7 +20,7 @@ interface Props {
   noHeadband?: boolean
 }
 
-const HEADBAND_WIDTH = 360
+const HEADBAND_WIDTH = 380
 const HEADBAND_INTERVAL_TRIGGERED_EVERY_MS = 30000
 const HEADBAND_INTERVAL_STAYS_OPEN_MS = 8000
 
@@ -85,11 +85,6 @@ const Banner = ({ intervenants, preventLinebreak, noHeadband }: Props) => {
 export default Banner
 
 const HeadBand = () => {
-  useEffect(() => {
-    interval.start()
-    return interval.stop
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
   const { start: delayStopIsOpen } = useTimeout(
     () => setIsOpen(false),
     HEADBAND_INTERVAL_STAYS_OPEN_MS
@@ -101,6 +96,11 @@ const HeadBand = () => {
     setIsOpen(true)
     delayStopIsOpen()
   }, HEADBAND_INTERVAL_TRIGGERED_EVERY_MS)
+
+  useEffect(() => {
+    interval.start()
+    return interval.stop
+  }, [interval])
 
   return (
     <ImageContainer maxWidth={HEADBAND_WIDTH}>

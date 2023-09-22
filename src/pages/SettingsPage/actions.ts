@@ -1,7 +1,6 @@
 import { IGroup } from "@/types"
+import Chooser from "random-seed-weighted-chooser"
 import { v4 as uuidv4 } from "uuid"
-// @ts-expect-error: Not typed library
-import pick from "pick-random-weighted"
 
 export const generateNewGroup = (): IGroup => ({
   hidden: true,
@@ -11,17 +10,17 @@ export const generateNewGroup = (): IGroup => ({
 })
 
 export const getRandomSubmitMessage = () => {
-  const SUBMIT_MESSAGES: [string, number][] = [
-    ["C'est validé !", 10],
-    ["Et c'est dans la boite !", 10],
-    ["On est bon !", 10],
-    ["Ok 👌", 10],
-    ["Je vous ai ... compris !", 2],
-    ["Imagine un jour j'le fais plus 😈", 2],
-    ["Ca part en prod'", 5],
-    ["Il y a un problème... ah non c'est bon 👍", 3],
+  const SUBMIT_MESSAGES = [
+    { label: "C'est validé !", weight: 10 },
+    { label: "Et c'est dans la boite !", weight: 10 },
+    { label: "On est bon !", weight: 10 },
+    { label: "Ok 👌", weight: 5 },
+    { label: "Je vous ai ... compris !", weight: 3 },
+    { label: "Imagine un jour j'le fais plus 😈", weight: 2 },
+    { label: "Ca part en prod'", weight: 4 },
+    { label: "Il y a un problème... ah non c'est bon 👍", weight: 3 },
   ]
-  return pick(SUBMIT_MESSAGES)
+  return (Chooser.chooseWeightedObject(SUBMIT_MESSAGES) as any)?.label
 }
 
 export const getNonHiddenIntervenants = (groups: IGroup[]) =>
