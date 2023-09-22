@@ -9,7 +9,7 @@ import {
   getDocs,
   getFirestore,
   onSnapshot,
-  updateDoc,
+  setDoc,
 } from "firebase/firestore"
 import { IDatabase, IIntervenantColors, IRoomData } from "./types"
 
@@ -53,7 +53,7 @@ export const updateIntervenantColor = async ({
   colorField: keyof IIntervenantColors
 }) => {
   const ref = doc(db, "config", "intervenants")
-  await updateDoc(ref, { [colorField]: data })
+  await setDoc(ref, { [colorField]: data }, { merge: true })
 }
 
 interface IsubscribeToRoom {
@@ -79,5 +79,5 @@ export const updateRoom = async ({
   newFields: Partial<IRoomData>
 }) => {
   const ref = doc(db, "rooms", roomId)
-  await updateDoc(ref, newFields)
+  await setDoc(ref, newFields, { merge: true })
 }

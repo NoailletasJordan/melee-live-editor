@@ -35,6 +35,7 @@ const BannerSection = ({
         <Group position="apart">
           <SubTitle>Vue Bannière</SubTitle>
           <Switch
+            disabled={isLoading}
             labelPosition="left"
             size="sm"
             label={
