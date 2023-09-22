@@ -8,6 +8,7 @@ import {
   Divider,
   Group,
   ScrollArea,
+  Skeleton,
   Stack,
   Switch,
   Text,
@@ -19,12 +20,14 @@ interface Props {
   togglePreventLinebreak: () => void
   preventLinebreak: boolean
   intervenants: IIntervenant[]
+  isLoading: boolean
 }
 
 const BannerSection = ({
   intervenants,
   togglePreventLinebreak,
   preventLinebreak,
+  isLoading,
 }: Props) => {
   return (
     <BasicCard>
@@ -39,42 +42,58 @@ const BannerSection = ({
                 Ligne unique
               </TooltipWrapper>
             }
-            checked={!preventLinebreak}
+            checked={preventLinebreak}
             onChange={togglePreventLinebreak}
           />
         </Group>
-        <Center>
-          <Box>
-            <Divider size="xl" miw={"2rem"} />
-            <ScrollArea type="auto" offsetScrollbars>
-              <Group noWrap>
-                {intervenants.map(({ name, company, id }, index) => (
-                  <Fragment key={id}>
-                    {!!index && (
-                      <Divider orientation="vertical" mt={"lg"} mah={"5rem"} />
-                    )}
-                    <Box p={"0.5rem"} maw={400}>
-                      <Text
-                        fz={"1.6rem"}
-                        style={{
-                          whiteSpace: !preventLinebreak ? "nowrap" : "normal",
-                        }}
-                      >
-                        {startCase(name)}
-                      </Text>
-                      <Text align="center" fs={"italic"}>
-                        {company}
-                      </Text>
-                    </Box>
-                  </Fragment>
-                ))}
-              </Group>
-            </ScrollArea>
-          </Box>
-        </Center>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <Center>
+            <Box style={{ overflow: "hidden" }}>
+              <Divider size="xl" miw={"2rem"} />
+              <ScrollArea type="auto" offsetScrollbars>
+                <Group noWrap>
+                  {intervenants.map(({ name, company, id }, index) => (
+                    <Fragment key={id}>
+                      {!!index && (
+                        <Divider
+                          orientation="vertical"
+                          mt={"lg"}
+                          mah={"5rem"}
+                        />
+                      )}
+                      <Box p={"0.5rem"} maw={400}>
+                        <Text
+                          fz={"1.6rem"}
+                          style={{
+                            whiteSpace: preventLinebreak ? "nowrap" : "normal",
+                          }}
+                        >
+                          {startCase(name)}
+                        </Text>
+                        <Text
+                          align="center"
+                          fs={"italic"}
+                          style={{
+                            whiteSpace: preventLinebreak ? "nowrap" : "normal",
+                          }}
+                        >
+                          {company}
+                        </Text>
+                      </Box>
+                    </Fragment>
+                  ))}
+                </Group>
+              </ScrollArea>
+            </Box>
+          </Center>
+        )}
       </Stack>
     </BasicCard>
   )
 }
 
 export default BannerSection
+
+const Loader = () => <Skeleton height={100} mt={6} />

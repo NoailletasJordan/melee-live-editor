@@ -50,6 +50,3 @@ const HomePage = ({ roomsWithId, isLoading }: Props) => {
 }
 
 export default HomePage
-
-/** Temp */
-// NAME SPA DEFAULT ETC

@@ -1,25 +1,44 @@
 import Title from "@/components/Layout/components/Title"
-import { subscribeToRoom } from "@/firebase"
+import { subscribeToRoom, updateRoom } from "@/firebase"
 import { IGroup, IIntervenant } from "@/types"
 import { Box, Divider, Group, Skeleton, Stack } from "@mantine/core"
 import { upperFirst, useMediaQuery } from "@mantine/hooks"
+import { notifications } from "@mantine/notifications"
+import { IconCheck } from "@tabler/icons-react"
 import { Unsubscribe } from "firebase/database"
-import { cloneDeep, set } from "lodash"
+import { cloneDeep, isEqual, set } from "lodash"
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
+import { generateNewGroup, getRandomSubmitMessage } from "./actions"
 import BannerSection from "./components/BannerSection"
 import Board from "./components/Board/index"
+import ButtonComfirmChanges from "./components/ButtonComfirmChanges/index"
 import UserForm from "./components/UserForm/index"
 
 const BREAKPOINT_MAX_WIDTH = "54em"
+interface IStateValues {
+  groups: IGroup[]
+  preventLinebreak: boolean
+}
+const defaultValues = {
+  groups: [],
+  preventLinebreak: false,
+}
 
 const SettingsPage = () => {
   const unsubscriberRef = useRef<Unsubscribe>()
   const { roomId } = useParams()
   const belowBreakpoint = useMediaQuery(`(max-width: ${BREAKPOINT_MAX_WIDTH})`)
-  const [preventLinebreak, setPreventLinebreak] = useState(false)
-  const [groups, setGroups] = useState<IGroup[]>([])
+  const [preventLinebreak, setPreventLinebreak] = useState(
+    defaultValues.preventLinebreak
+  )
+  const [groups, setGroups] = useState<IGroup[]>(defaultValues.groups)
+  const [oldState, setOldState] = useState<IStateValues>(defaultValues)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [error, setError] = useState<Error>()
+  const configIsEdited = !isEqual({ groups, preventLinebreak }, oldState)
 
   useEffect(() => {
     roomId &&
@@ -27,7 +46,18 @@ const SettingsPage = () => {
         const unsubscriber = await subscribeToRoom({
           roomId,
           onValueUpdate: (roomData) => {
+            if (!roomData)
+              return setError(
+                new Error('"Les données de cette pages sont introuvables"')
+              )
             setGroups(roomData.groups || [])
+            setPreventLinebreak(roomData.preventNamesLineBreak)
+            setOldState({
+              groups: roomData.groups || [],
+              preventLinebreak: roomData.preventNamesLineBreak,
+            })
+            setIsSubmitting(false)
+            setIsInitialLoading(false)
           },
         })
 
@@ -39,13 +69,9 @@ const SettingsPage = () => {
       })()
   }, [roomId])
 
-  const togglePreventLinebreak = () => setPreventLinebreak(!preventLinebreak)
+  if (error) throw new Error(error.message)
 
-  const gridStyle = {
-    display: "grid",
-    gridTemplateColumns: !belowBreakpoint ? "max-content auto" : "1fr",
-    gap: "1rem",
-  }
+  const togglePreventLinebreak = () => setPreventLinebreak(!preventLinebreak)
 
   const addIntervenant = (
     partialIntervenant: Pick<IIntervenant, "name" | "company">
@@ -54,11 +80,20 @@ const SettingsPage = () => {
       id: uuidv4(),
       ...partialIntervenant,
     }
+
+    // Create intervenants if dont exist
+    const groupsIsEmpty = !groups.length
+    if (groupsIsEmpty) {
+      const newGroup = generateNewGroup()
+      newGroup.intervenants = [newIntervenant]
+      setGroups([newGroup])
+      return
+    }
+
     const newFirstGroupIntervenants = [
       newIntervenant,
-      ...(groups[0].intervenants || []),
+      ...groups[0].intervenants,
     ]
-    // Create intervenants if dont exist
     const newGroups = set(
       cloneDeep(groups),
       "[0].intervenants",
@@ -71,31 +106,74 @@ const SettingsPage = () => {
     .filter(({ hidden }) => !hidden)
     .flatMap(({ intervenants }) => intervenants || [])
 
+  const handleSubmitChange = async () => {
+    if (!roomId) return
+    const newFields = {
+      groups,
+      preventNamesLineBreak: preventLinebreak,
+    }
+    setIsSubmitting(true)
+    await updateRoom({ roomId, newFields })
+    notifications.show({
+      icon: <IconCheck size="1.2rem" />,
+      title: getRandomSubmitMessage(),
+      message: "Mise a jour prise en compte",
+    })
+  }
+
+  const revertChanges = () => {
+    setGroups(oldState.groups)
+    setPreventLinebreak(oldState.preventLinebreak)
+  }
+
+  const gridStyle = {
+    display: "grid",
+    gridTemplateColumns: !belowBreakpoint ? "max-content auto" : "1fr",
+    gap: "1rem",
+  }
+
   return (
-    <Stack>
-      {!roomId ? (
-        <Skeleton height={8} h={"2rem"} maw={"16rem"} />
-      ) : (
-        <Title>{`Paramètres de la page ${upperFirst(roomId || "")}`}</Title>
-      )}
-
+    <>
       <Stack>
-        <Box style={gridStyle}>
-          <Group>
-            <UserForm addIntervenant={addIntervenant} />
-            {!belowBreakpoint && <Divider orientation="vertical" />}
-          </Group>
-          <BannerSection
-            intervenants={nonHiddenIntervenants}
-            preventLinebreak={preventLinebreak}
-            togglePreventLinebreak={togglePreventLinebreak}
-          />
-        </Box>
-      </Stack>
+        {!roomId ? (
+          <Skeleton height={8} h={"2rem"} maw={"16rem"} />
+        ) : (
+          <Title>{`Paramètres de la page ${upperFirst(roomId || "")}`}</Title>
+        )}
 
-      <Divider label="Organisation des intervenants" labelPosition="center" />
-      <Board groups={groups} setGroups={setGroups} />
-    </Stack>
+        <Stack>
+          <Box style={gridStyle}>
+            <Group>
+              <UserForm
+                isLoading={isInitialLoading}
+                addIntervenant={addIntervenant}
+              />
+              {!belowBreakpoint && <Divider orientation="vertical" />}
+            </Group>
+            <BannerSection
+              isLoading={isInitialLoading}
+              intervenants={nonHiddenIntervenants}
+              preventLinebreak={preventLinebreak}
+              togglePreventLinebreak={togglePreventLinebreak}
+            />
+          </Box>
+        </Stack>
+
+        <Divider label="Organisation des intervenants" labelPosition="center" />
+        <Board
+          isLoading={isInitialLoading}
+          groups={groups}
+          setGroups={setGroups}
+        />
+      </Stack>
+      <ButtonComfirmChanges
+        isSubmitting={isSubmitting}
+        onClickSubmit={handleSubmitChange}
+        onClickRevert={revertChanges}
+        open={configIsEdited}
+        disabled={isInitialLoading}
+      />
+    </>
   )
 }
 

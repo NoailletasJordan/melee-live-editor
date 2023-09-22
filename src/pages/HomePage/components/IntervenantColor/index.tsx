@@ -67,7 +67,7 @@ const IntervenantColor = () => {
 
     notifications.show({
       icon: <IconCheck size="1.2rem" />,
-      title: "Success",
+      title: "C'est validé !",
       message: "Mise a jour prise en compte",
     })
 

@@ -1,5 +1,5 @@
 import { ThemeIcon } from "@mantine/core"
-import { IconDotsVertical } from "@tabler/icons-react"
+import { IconGripVertical } from "@tabler/icons-react"
 import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd"
 
 interface Props {
@@ -17,7 +17,7 @@ const DragHandle = ({ styles = {}, dragHandleProps }: Props) => {
 
   return (
     <ThemeIcon {...dragHandleProps} color="white" radius={"xl"}>
-      <IconDotsVertical style={{ ...themeIconStyle, ...styles }} />
+      <IconGripVertical style={{ ...themeIconStyle, ...styles }} />
     </ThemeIcon>
   )
 }

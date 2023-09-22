@@ -1,6 +1,15 @@
 import BasicCard from "@/components/Layout/components/BasicCard"
+import SubTitle from "@/components/Layout/components/SubTitle"
 import { IGroup, IIntervenant } from "@/types"
-import { Box, Flex, ScrollArea } from "@mantine/core"
+import {
+  ActionIcon,
+  Box,
+  Flex,
+  ScrollArea,
+  Skeleton,
+  Stack,
+} from "@mantine/core"
+import { IconPlus } from "@tabler/icons-react"
 import {
   cloneDeep,
   find as lodashFind,
@@ -8,9 +17,10 @@ import {
   set,
 } from "lodash"
 import { DragDropContext, DropResult } from "react-beautiful-dnd"
+import { generateNewGroup } from "../../actions"
 import DraggableGroup from "./components/DraggableGroup"
 import DraggableIntervenant from "./components/DraggableIntervenant"
-import DroppableWrapper from "./components/DroppableWrapper"
+import StrictModeDroppable from "./components/StrictModeDroppable"
 
 const insertAtIndex = (arr: any[], index: number, newItem: any) => [
   ...arr.slice(0, index),
@@ -114,9 +124,10 @@ const reorderIntervernants = ({
 interface Props {
   groups: IGroup[]
   setGroups: (groups: IGroup[]) => void
+  isLoading: boolean
 }
 
-const Board = ({ groups, setGroups }: Props) => {
+const Board = ({ groups, setGroups, isLoading }: Props) => {
   const onDragEnd = (dropResult: DropResult) => {
     const functionsParameters = { dropResult, initialGroups: groups }
     const reorderFunctions = {
@@ -186,48 +197,91 @@ const Board = ({ groups, setGroups }: Props) => {
       setGroups(newGroups)
     }
 
+  const addGroup = () => {
+    const newGroup = generateNewGroup()
+    setGroups([...groups, newGroup])
+  }
+
   return (
     <BasicCard>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <DroppableWrapper
-          droppableId="all-collumns"
-          direction="horizontal"
-          type="group"
-        >
-          <Box style={gridStyle}>
-            <ScrollArea type="auto" offsetScrollbars>
-              <Flex wrap={"nowrap"} justify="flex-start" align="flex-start">
-                {groups.map((group, groupIndex) => (
-                  <DraggableGroup
-                    hideDeleteButton={groups.length === 1}
-                    key={group.id}
-                    handleDelete={handleDeleteGroup(groupIndex)}
-                    group={group}
-                    handleGroupUpdate={handleGroupUpdate(groupIndex)}
-                    index={groupIndex}
-                  >
-                    {group.intervenants.map((intervenant, intervenantIndex) => (
-                      <DraggableIntervenant
-                        handleDeleteIntervenant={handleDeleteIntervenant({
-                          groupIndex,
-                          intervenantIndex,
-                        })}
-                        key={intervenant.id}
-                        intervenant={intervenant}
-                        index={intervenantIndex}
-                        handleIntervenantUpdate={handleIntervenantUpdate({
-                          groupIndex: groupIndex,
-                          intervenantIndex: intervenantIndex,
-                        })}
-                      />
-                    ))}
-                  </DraggableGroup>
-                ))}
-              </Flex>
-            </ScrollArea>
-          </Box>
-        </DroppableWrapper>
-      </DragDropContext>
+      <Stack>
+        <SubTitle>Groupes d'intervenants</SubTitle>
+        {isLoading ? (
+          <Skeleton h={200} />
+        ) : (
+          <DragDropContext onDragEnd={onDragEnd}>
+            <StrictModeDroppable
+              droppableId="all-collumns"
+              type="group"
+              direction="horizontal"
+            >
+              {(providedDroppable) => (
+                <div
+                  ref={providedDroppable.innerRef}
+                  {...providedDroppable.droppableProps}
+                >
+                  <Box style={gridStyle}>
+                    <ScrollArea type="auto" offsetScrollbars>
+                      <Flex
+                        wrap={"nowrap"}
+                        justify="flex-start"
+                        align="flex-start"
+                      >
+                        {groups.map((group, groupIndex) => (
+                          <DraggableGroup
+                            hideDeleteButton={groups.length === 1}
+                            key={group.id}
+                            handleDelete={handleDeleteGroup(groupIndex)}
+                            group={group}
+                            handleGroupUpdate={handleGroupUpdate(groupIndex)}
+                            index={groupIndex}
+                          >
+                            {group.intervenants.map(
+                              (intervenant, intervenantIndex) => (
+                                <DraggableIntervenant
+                                  handleDeleteIntervenant={handleDeleteIntervenant(
+                                    {
+                                      groupIndex,
+                                      intervenantIndex,
+                                    }
+                                  )}
+                                  key={intervenant.id}
+                                  intervenant={intervenant}
+                                  index={intervenantIndex}
+                                  handleIntervenantUpdate={handleIntervenantUpdate(
+                                    {
+                                      groupIndex: groupIndex,
+                                      intervenantIndex: intervenantIndex,
+                                    }
+                                  )}
+                                />
+                              )
+                            )}
+                          </DraggableGroup>
+                        ))}
+                        {providedDroppable.placeholder}
+                        <ActionIcon
+                          color="primary"
+                          variant="filled"
+                          size="lg"
+                          radius="xl"
+                          aria-label="Add group"
+                          onClick={addGroup}
+                        >
+                          <IconPlus
+                            style={{ width: "70%", height: "70%" }}
+                            stroke={1.5}
+                          />
+                        </ActionIcon>
+                      </Flex>
+                    </ScrollArea>
+                  </Box>
+                </div>
+              )}
+            </StrictModeDroppable>
+          </DragDropContext>
+        )}
+      </Stack>
     </BasicCard>
   )
 }

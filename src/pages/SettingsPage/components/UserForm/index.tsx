@@ -17,11 +17,12 @@ import { CircleCheck, UserPlus } from "tabler-icons-react"
 
 interface Props {
   addIntervenant: (intervenant: Pick<IIntervenant, "name" | "company">) => void
+  isLoading: boolean
 }
 
 const DURATION_INTERVENANT_JUST_ADDED_MS = 2500
 
-const UserForm = ({ addIntervenant }: Props) => {
+const UserForm = ({ addIntervenant, isLoading }: Props) => {
   const ref = useRef<HTMLInputElement>(null)
   const form = useForm({
     initialValues: { name: "", company: "" },
@@ -49,6 +50,7 @@ const UserForm = ({ addIntervenant }: Props) => {
     mt: "xs",
     type: "submit",
     variant: "filled",
+    disabled: isLoading,
   }
   const justAddedButton = (
     <Button

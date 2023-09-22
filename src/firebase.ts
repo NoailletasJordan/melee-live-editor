@@ -26,7 +26,7 @@ const firebaseConfig = {
 const app2 = initializeApp(firebaseConfig)
 const db = getFirestore(app2)
 
-const subscribeToIntervenantColors = async (
+export const subscribeToIntervenantColors = async (
   onValueUpdate: (colorsConfig: IIntervenantColors) => void
 ) => {
   const unsubscriber = onSnapshot(doc(db, "config", "intervenants"), (doc) =>
@@ -36,7 +36,7 @@ const subscribeToIntervenantColors = async (
   return unsubscriber
 }
 
-const getRooms = async (): Promise<IDatabase["rooms"]> => {
+export const getRooms = async (): Promise<IDatabase["rooms"]> => {
   const querySnapshot = await getDocs(collection(db, "rooms"))
   const rooms: { [x: string]: any } = {}
   querySnapshot.forEach((doc) => {
@@ -45,7 +45,7 @@ const getRooms = async (): Promise<IDatabase["rooms"]> => {
   return rooms as IDatabase["rooms"]
 }
 
-const updateIntervenantColor = async ({
+export const updateIntervenantColor = async ({
   data,
   colorField,
 }: {
@@ -60,7 +60,10 @@ interface IsubscribeToRoom {
   onValueUpdate: (groups: IRoomData) => void
   roomId: string
 }
-const subscribeToRoom = async ({ onValueUpdate, roomId }: IsubscribeToRoom) => {
+export const subscribeToRoom = async ({
+  onValueUpdate,
+  roomId,
+}: IsubscribeToRoom) => {
   const unsubscriber = onSnapshot(doc(db, "rooms", roomId), (doc) =>
     onValueUpdate(doc.data() as IRoomData)
   )
@@ -68,9 +71,13 @@ const subscribeToRoom = async ({ onValueUpdate, roomId }: IsubscribeToRoom) => {
   return unsubscriber
 }
 
-export {
-  getRooms,
-  subscribeToIntervenantColors,
-  subscribeToRoom,
-  updateIntervenantColor,
+export const updateRoom = async ({
+  roomId,
+  newFields,
+}: {
+  roomId: string
+  newFields: Partial<IRoomData>
+}) => {
+  const ref = doc(db, "rooms", roomId)
+  await updateDoc(ref, newFields)
 }

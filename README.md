@@ -4,7 +4,12 @@ Utilise React, [Vite](https://vitejs.dev/), [Mantine](https://mantine.dev/)
 
 ## Instalation
 
-- Créer une fichier `.env` a la racine du projet et y entrer la ligne `VITE_FIREBASE_API_KEY=<firebase-api-key>`
+- Créer une fichier `.env` a la racine du projet et y entrer la ligne, avec la clef de ce [projet](https://console.firebase.google.com/project/view-editor-live/overview)
+
+```
+VITE_FIREBASE_API_KEY=<firebase-api-key>
+```
+
 - Installer dépendances `$ npm i`
 - (Optionnel) Lancer serveur de développement `$ npm run dev`
 

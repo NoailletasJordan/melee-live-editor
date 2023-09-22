@@ -1,30 +1,25 @@
+import DragHandle from "@/components/Layout/components/DragHandle/index"
+import { IGroup } from "@/types"
 import {
   ActionIcon,
+  Badge,
+  Box,
   Divider,
   Group,
-  Menu,
   Stack,
   TextInput,
 } from "@mantine/core"
-import { IconTrash } from "@tabler/icons-react"
 import { ReactNode } from "react"
 import { Draggable } from "react-beautiful-dnd"
 import { EyeCheck, EyeOff } from "tabler-icons-react"
-import DragHandle from "../../../../../../components/Layout/components/DragHandle/index"
-import { data } from "../../temp"
 import DraggableCard from "../BasicCardDrag"
-import DroppableWrapper from "../DroppableWrapper"
+import StrictModeDroppable from "../StrictModeDroppable"
+import DeleteButton from "./components/DeleteButton"
 
 interface Props {
   children: ReactNode
-  group: (typeof data)[any]
-  handleGroupUpdate: ({
-    key,
-    value,
-  }: {
-    key: keyof (typeof data)[any]
-    value: any
-  }) => void
+  group: IGroup
+  handleGroupUpdate: ({ key, value }: { key: keyof IGroup; value: any }) => void
   handleDelete: () => void
   index: number
   hideDeleteButton: boolean
@@ -38,6 +33,18 @@ const DraggableGroup = (props: Props) => {
     cursor: "pointer",
   }
 
+  const isHiddenBadge = (
+    <Badge variant="dot" color="yellow">
+      Masqué
+    </Badge>
+  )
+
+  const IsShownBadge = (
+    <Badge variant="dot" color="primary">
+      Affiché
+    </Badge>
+  )
+
   return (
     <Draggable key={group.id} draggableId={group.id} index={index}>
       {({ dragHandleProps, draggableProps, innerRef }) => (
@@ -45,23 +52,26 @@ const DraggableGroup = (props: Props) => {
           {...draggableProps}
           bg={group.hidden ? "#EBEBE4" : undefined}
           innerRef={innerRef}
-          ml={"sm"}
-          miw={250}
+          mr={"sm"}
+          miw={271}
         >
           <Stack spacing={"xs"}>
             <Group position="right" spacing={"xs"}>
+              <Box mr="auto">{group.hidden ? isHiddenBadge : IsShownBadge}</Box>
+
               <ActionIcon
                 onClick={() =>
                   handleGroupUpdate({ key: "hidden", value: !group.hidden })
                 }
+                variant={group.hidden ? "light" : ""}
+                color={group.hidden ? "blue" : ""}
               >
-                {group.hidden ? (
+                {!group.hidden ? (
                   <EyeOff style={themeIconStyle} />
                 ) : (
                   <EyeCheck style={themeIconStyle} />
                 )}
               </ActionIcon>
-
               {!props.hideDeleteButton && (
                 <DeleteButton handleDelete={props.handleDelete} />
               )}
@@ -82,9 +92,19 @@ const DraggableGroup = (props: Props) => {
 
             <Divider label="Intervenants" labelPosition="center" />
 
-            <DroppableWrapper droppableId={group.id} type="intervenant">
-              {children}
-            </DroppableWrapper>
+            <StrictModeDroppable droppableId={group.id} type="intervenant">
+              {(providedDroppable) => (
+                <div
+                  ref={providedDroppable.innerRef}
+                  {...providedDroppable.droppableProps}
+                  // https://stackoverflow.com/a/55445514
+                  style={{ minHeight: 1 }}
+                >
+                  {children}
+                  {providedDroppable.placeholder}
+                </div>
+              )}
+            </StrictModeDroppable>
           </Stack>
         </DraggableCard>
       )}
@@ -93,28 +113,3 @@ const DraggableGroup = (props: Props) => {
 }
 
 export default DraggableGroup
-
-interface Props {}
-
-const DeleteButton = (props: Pick<Props, "handleDelete">) => (
-  <Menu shadow="md" width={200}>
-    <Menu.Target>
-      <ActionIcon size={"md"}>
-        <IconTrash width="70%" height="70%" cursor="pointer" />
-      </ActionIcon>
-    </Menu.Target>
-
-    <Menu.Dropdown>
-      <Menu.Label>Sans regret hein ?</Menu.Label>
-
-      <Menu.Item
-        color="red"
-        closeMenuOnClick
-        onClick={props.handleDelete}
-        icon={<IconTrash size={"1rem"} />}
-      >
-        Supprimer le groupe
-      </Menu.Item>
-    </Menu.Dropdown>
-  </Menu>
-)
