@@ -16,6 +16,9 @@ const App = () => {
 
   useEffect(() => {
     ;(async () => {
+      console.log(
+        "Coucou à l'équipe La Mêlée Numérique 👋 ! \nhttps://jordannoailletas.com/"
+      )
       const res = await getRooms()
       setIsLoading(false)
       setRooms(res)
