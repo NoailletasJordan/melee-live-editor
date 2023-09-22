@@ -20,7 +20,7 @@ interface Props {
   noHeadband?: boolean
 }
 
-const HEADBAND_WIDTH = 300
+const HEADBAND_WIDTH = 360
 const HEADBAND_INTERVAL_TRIGGERED_EVERY_MS = 30000
 const HEADBAND_INTERVAL_STAYS_OPEN_MS = 8000
 
