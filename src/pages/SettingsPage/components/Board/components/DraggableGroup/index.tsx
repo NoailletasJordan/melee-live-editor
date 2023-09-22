@@ -1,4 +1,4 @@
-import DragHandle from "@/components/Layout/components/DragHandle/index"
+import DragHandle from "@/components/DragHandle/index"
 import { IGroup } from "@/types"
 import {
   ActionIcon,
@@ -19,14 +19,14 @@ import DeleteButton from "./components/DeleteButton"
 interface Props {
   children: ReactNode
   group: IGroup
-  handleGroupUpdate: ({ key, value }: { key: keyof IGroup; value: any }) => void
+  handleUpdate: ({ key, value }: { key: keyof IGroup; value: any }) => void
   handleDelete: () => void
   index: number
   hideDeleteButton: boolean
 }
 
 const DraggableGroup = (props: Props) => {
-  const { children, handleGroupUpdate, group, index } = props
+  const { children, handleUpdate, group, index } = props
   const themeIconStyle = {
     width: "70%",
     height: "70%",
@@ -61,7 +61,7 @@ const DraggableGroup = (props: Props) => {
 
               <ActionIcon
                 onClick={() =>
-                  handleGroupUpdate({ key: "hidden", value: !group.hidden })
+                  handleUpdate({ key: "hidden", value: !group.hidden })
                 }
                 variant={group.hidden ? "light" : ""}
                 color={group.hidden ? "blue" : ""}
@@ -83,7 +83,7 @@ const DraggableGroup = (props: Props) => {
               placeholder="Titre du groupe"
               value={group.title}
               onChange={(event) =>
-                handleGroupUpdate({
+                handleUpdate({
                   key: "title",
                   value: event.target.value,
                 })

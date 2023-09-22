@@ -1,5 +1,5 @@
 import BasicCard from "@/components/Layout/components/BasicCard"
-import SubTitle from "@/components/Layout/components/SubTitle/index"
+import SubTitle from "@/components/SubTitle/index"
 import { IIntervenant } from "@/types"
 import { ICON_SIZE_DEFAULT } from "@/utils"
 import {

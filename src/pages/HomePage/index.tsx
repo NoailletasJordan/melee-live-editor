@@ -1,4 +1,4 @@
-import Title from "@/components/Layout/components/Title"
+import Title from "@/components/Title"
 import { IRoomData, RoomId } from "@/types"
 import { getRoomBannerLink, getRoomSettingsLink } from "@/utils"
 import { Group, SimpleGrid, Skeleton, Stack } from "@mantine/core"

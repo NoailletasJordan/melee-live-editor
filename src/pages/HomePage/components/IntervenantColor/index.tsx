@@ -1,16 +1,13 @@
-import Title from "@/components/Layout/components/Title"
-import {
-  subscribeToIntervenantColors,
-  updateIntervenantColor,
-} from "@/firebase"
+import { ColorsContext } from "@/components/ContextWrapper/context"
+import Title from "@/components/Title"
+import { updateIntervenantColor } from "@/firebase"
 import { IIntervenantColors } from "@/types"
 import { ICON_SIZE_DEFAULT } from "@/utils"
 import { Box, Button, Drawer, ScrollArea, Skeleton } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { IconCheck } from "@tabler/icons-react"
-import type { Unsubscribe } from "firebase/database"
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Adjustments } from "tabler-icons-react"
 import IntervenantColorContent from "./components/IntervenantColorContent"
 
@@ -20,48 +17,35 @@ const COLOR_SETTINGS_INITIAL = {
 }
 
 const IntervenantColor = () => {
-  const unsubscriberRef = useRef<Unsubscribe>()
   const [drawerIsOpened, drawerHandler] = useDisclosure(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedColorField, setType] =
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedColorField, setSelectedColorField] =
     useState<keyof IIntervenantColors>("nameColor")
-  const [colorsConfig, setColorsConfig] = useState<IIntervenantColors>(
+  // The colors in database
+  const colorsContext = useContext(ColorsContext)
+  // The colors potentialy localy modified by the user before pushing the update
+  const [localColors, setLocalColors] = useState<IIntervenantColors>(
     COLOR_SETTINGS_INITIAL
   )
-  // Used to reset colorsConfig state and compare values
-  const [colorsConfigOld, setColorsConfigOld] = useState(COLOR_SETTINGS_INITIAL)
 
   useEffect(() => {
     ;(async () => {
-      const unsubscriber = await subscribeToIntervenantColors(
-        onIntervenantColorCallback
-      )
-
-      unsubscriberRef.current = unsubscriber
-
-      return () => {
-        unsubscriberRef.current?.()
-      }
+      setLocalColors(colorsContext.colors)
+      setIsSubmitting(false)
     })()
-  }, [])
+  }, [colorsContext.colors])
 
-  const resetColorsConfigToOld = () => setColorsConfig(colorsConfigOld)
+  const resetColorsConfigToOld = () => setLocalColors(colorsContext.colors)
 
-  const onIntervenantColorCallback = (newColors: IIntervenantColors) => {
-    setColorsConfig(newColors)
-    setColorsConfigOld(newColors)
-    setIsLoading(false)
-  }
-
-  const updateColorSettings =
+  const updateColorSettingsLocally =
     (selectedColorField: keyof IIntervenantColors) => (newColor: string) => {
-      setColorsConfig({ ...colorsConfig, [selectedColorField]: newColor })
+      setLocalColors({ ...localColors, [selectedColorField]: newColor })
     }
 
   const handleSubmit = async () => {
-    setIsLoading(true)
+    setIsSubmitting(true)
     await updateIntervenantColor({
-      data: colorsConfig[selectedColorField],
+      data: localColors[selectedColorField],
       colorField: selectedColorField,
     })
 
@@ -75,9 +59,10 @@ const IntervenantColor = () => {
   }
 
   const currentEntryIsValid = () => {
-    const isValidEntry = CSS.supports("color", colorsConfig[selectedColorField])
+    const isValidEntry = CSS.supports("color", localColors[selectedColorField])
     const isDifferentThanOldValue =
-      colorsConfig[selectedColorField] !== colorsConfigOld[selectedColorField]
+      localColors[selectedColorField] !==
+      colorsContext.colors[selectedColorField]
     return isValidEntry && isDifferentThanOldValue
   }
 
@@ -96,16 +81,16 @@ const IntervenantColor = () => {
         <IntervenantColorContent
           disableConfirm={!currentEntryIsValid()}
           onConfirm={handleSubmit}
-          handleChangeColor={updateColorSettings(selectedColorField)}
-          color={colorsConfig[selectedColorField]}
+          handleChangeColor={updateColorSettingsLocally(selectedColorField)}
+          color={localColors[selectedColorField]}
           colorField={selectedColorField}
-          handleChangeType={setType}
-          isLoading={isLoading}
+          handleColorField={setSelectedColorField}
+          isSubmitting={isSubmitting}
         />
       </Drawer>
 
       <Box>
-        <Skeleton visible={isLoading}>
+        <Skeleton visible={colorsContext.isLoading}>
           <Button
             leftIcon={<Adjustments size={ICON_SIZE_DEFAULT} />}
             variant="subtle"

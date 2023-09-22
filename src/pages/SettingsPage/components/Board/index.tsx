@@ -1,5 +1,5 @@
 import BasicCard from "@/components/Layout/components/BasicCard"
-import SubTitle from "@/components/Layout/components/SubTitle"
+import SubTitle from "@/components/SubTitle"
 import { IGroup, IIntervenant } from "@/types"
 import {
   ActionIcon,
@@ -142,14 +142,14 @@ const Board = ({ groups, setGroups, isLoading }: Props) => {
     setGroups(reordered)
   }
 
-  const handleGroupUpdate =
+  const handleGroupUpdateLocally =
     (groupIndex: number) =>
     ({ key, value }: { key: keyof IGroup; value: any }) => {
       const newGroups = set(cloneDeep(groups), `[${groupIndex}].${key}`, value)
       setGroups(newGroups)
     }
 
-  const handleIntervenantUpdate =
+  const handleIntervenantUpdateLocally =
     ({
       groupIndex,
       intervenantIndex,
@@ -166,9 +166,8 @@ const Board = ({ groups, setGroups, isLoading }: Props) => {
       setGroups(updatedGroups)
     }
 
-  const handleDeleteGroup = (index: number) => () => {
+  const handleDeleteGroupLocally = (index: number) => () =>
     setGroups(groups.filter((_, currentIndex) => currentIndex !== index))
-  }
 
   // Grid used for the scrollArea
   const gridStyle = {
@@ -177,7 +176,7 @@ const Board = ({ groups, setGroups, isLoading }: Props) => {
     gap: "1rem",
   }
 
-  const handleDeleteIntervenant =
+  const handleDeleteIntervenantLocally =
     ({
       groupIndex,
       intervenantIndex,
@@ -231,29 +230,25 @@ const Board = ({ groups, setGroups, isLoading }: Props) => {
                           <DraggableGroup
                             hideDeleteButton={groups.length === 1}
                             key={group.id}
-                            handleDelete={handleDeleteGroup(groupIndex)}
+                            handleDelete={handleDeleteGroupLocally(groupIndex)}
                             group={group}
-                            handleGroupUpdate={handleGroupUpdate(groupIndex)}
+                            handleUpdate={handleGroupUpdateLocally(groupIndex)}
                             index={groupIndex}
                           >
                             {group.intervenants.map(
                               (intervenant, intervenantIndex) => (
                                 <DraggableIntervenant
-                                  handleDeleteIntervenant={handleDeleteIntervenant(
-                                    {
-                                      groupIndex,
-                                      intervenantIndex,
-                                    }
-                                  )}
+                                  handleDelete={handleDeleteIntervenantLocally({
+                                    groupIndex,
+                                    intervenantIndex,
+                                  })}
                                   key={intervenant.id}
                                   intervenant={intervenant}
                                   index={intervenantIndex}
-                                  handleIntervenantUpdate={handleIntervenantUpdate(
-                                    {
-                                      groupIndex: groupIndex,
-                                      intervenantIndex: intervenantIndex,
-                                    }
-                                  )}
+                                  handleUpdate={handleIntervenantUpdateLocally({
+                                    groupIndex: groupIndex,
+                                    intervenantIndex: intervenantIndex,
+                                  })}
                                 />
                               )
                             )}

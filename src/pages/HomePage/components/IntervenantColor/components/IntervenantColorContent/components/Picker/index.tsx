@@ -4,13 +4,13 @@ interface Props {
   onConfirm: () => void
   color: string
   handleChangeColor: (newColor: string) => void
-  isLoading: boolean
+  isSubmitting: boolean
   disableConfirm: boolean
 }
 
 const Picker = ({
   disableConfirm,
-  isLoading,
+  isSubmitting,
   color,
   handleChangeColor,
   onConfirm,
@@ -22,11 +22,10 @@ const Picker = ({
       value={color}
       onChange={handleChangeColor}
       withPreview={true}
-      maxLength={9}
     />
     <Button
-      disabled={!isLoading && disableConfirm}
-      loading={isLoading}
+      disabled={!isSubmitting && disableConfirm}
+      loading={isSubmitting}
       onClick={onConfirm}
     >
       Confirmer

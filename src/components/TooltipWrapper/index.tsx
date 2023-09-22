@@ -7,7 +7,7 @@ interface Props {
 }
 
 const TooltipWrapper = ({ children, label }: Props) => (
-  <Tooltip label={label} position="bottom-end" withArrow>
+  <Tooltip label={label} position="bottom-end">
     <Group spacing={"xs"} style={{ cursor: "help" }}>
       <Text fs={"italic"}>{children}</Text>
     </Group>

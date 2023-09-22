@@ -1,4 +1,4 @@
-import DragHandle from "@/components/Layout/components/DragHandle/index"
+import DragHandle from "@/components/DragHandle/index"
 import { IIntervenant } from "@/types"
 import { ActionIcon, Group, Stack, TextInput, ThemeIcon } from "@mantine/core"
 import { IconExclamationMark, IconTrash } from "@tabler/icons-react"
@@ -8,8 +8,8 @@ import DraggableCard from "../BasicCardDrag"
 interface Props {
   intervenant: IIntervenant
   index: number
-  handleDeleteIntervenant: () => void
-  handleIntervenantUpdate: ({
+  handleDelete: () => void
+  handleUpdate: ({
     key,
     value,
   }: {
@@ -21,8 +21,8 @@ interface Props {
 const DraggableIntervenant = ({
   intervenant,
   index,
-  handleIntervenantUpdate,
-  handleDeleteIntervenant,
+  handleUpdate,
+  handleDelete,
 }: Props) => {
   const showWarning =
     !intervenant.name.trim().length || !intervenant.company.trim().length
@@ -45,7 +45,7 @@ const DraggableIntervenant = ({
             <Group position="right" spacing={"xs"}>
               {showWarning && warning}
 
-              <ActionIcon size={"md"} onClick={handleDeleteIntervenant}>
+              <ActionIcon size={"md"} onClick={handleDelete}>
                 <IconTrash width="70%" height="70%" cursor="pointer" />
               </ActionIcon>
 
@@ -55,7 +55,7 @@ const DraggableIntervenant = ({
               placeholder="Nom de l'intervenant"
               value={intervenant.name}
               onChange={(event) =>
-                handleIntervenantUpdate({
+                handleUpdate({
                   key: "name",
                   value: event.target.value,
                 })
@@ -66,7 +66,7 @@ const DraggableIntervenant = ({
               placeholder="Entreprise"
               value={intervenant.company}
               onChange={(event) =>
-                handleIntervenantUpdate({
+                handleUpdate({
                   key: "company",
                   value: event.target.value,
                 })

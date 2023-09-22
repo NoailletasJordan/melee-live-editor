@@ -1,16 +1,21 @@
-import Title from "@/components/Layout/components/Title"
+import Title from "@/components/Title"
 import { subscribeToRoom, updateRoom } from "@/firebase"
 import { IGroup, IIntervenant } from "@/types"
-import { Box, Divider, Group, Skeleton, Stack } from "@mantine/core"
+import { getRoomBannerLink } from "@/utils"
+import { Box, Button, Divider, Group, Skeleton, Stack } from "@mantine/core"
 import { upperFirst, useMediaQuery } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
-import { IconCheck } from "@tabler/icons-react"
+import { IconCheck, IconExternalLink } from "@tabler/icons-react"
 import { Unsubscribe } from "firebase/database"
 import { cloneDeep, isEqual, set } from "lodash"
 import { useEffect, useRef, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
-import { generateNewGroup, getRandomSubmitMessage } from "./actions"
+import {
+  generateNewGroup,
+  getNonHiddenIntervenants,
+  getRandomSubmitMessage,
+} from "./actions"
 import BannerSection from "./components/BannerSection"
 import Board from "./components/Board/index"
 import ButtonComfirmChanges from "./components/ButtonComfirmChanges/index"
@@ -38,6 +43,8 @@ const SettingsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [error, setError] = useState<Error>()
+  const navigate = useNavigate()
+
   const configIsEdited = !isEqual({ groups, preventLinebreak }, oldState)
 
   useEffect(() => {
@@ -102,9 +109,7 @@ const SettingsPage = () => {
     setGroups(newGroups)
   }
 
-  const nonHiddenIntervenants = groups
-    .filter(({ hidden }) => !hidden)
-    .flatMap(({ intervenants }) => intervenants || [])
+  const nonHiddenIntervenants = getNonHiddenIntervenants(groups)
 
   const handleSubmitChange = async () => {
     if (!roomId) return
@@ -138,7 +143,16 @@ const SettingsPage = () => {
         {!roomId ? (
           <Skeleton height={8} h={"2rem"} maw={"16rem"} />
         ) : (
-          <Title>{`Paramètres de la page ${upperFirst(roomId || "")}`}</Title>
+          <Group>
+            <Title>{`Paramètres de la page ${upperFirst(roomId || "")}`}</Title>
+            <Button
+              onClick={() => navigate(getRoomBannerLink(roomId))}
+              variant="light"
+              rightIcon={<IconExternalLink size={14} />}
+            >
+              Bannière
+            </Button>
+          </Group>
         )}
 
         <Stack>

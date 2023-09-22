@@ -3,6 +3,7 @@ import { MantineProvider } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
 import { useEffect, useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import ContextWrapper from "./components/ContextWrapper/index.tsx"
 import Layout from "./components/Layout/index.tsx"
 import { getRooms } from "./firebase.ts"
 import BannerPage from "./pages/BannerPage/index.tsx"
@@ -31,20 +32,25 @@ const App = () => {
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
       <Notifications />
-      <BrowserRouter>
-        <Layout navbarConfig={roomsDataWithId} isLoading={isLoading}>
-          <Routes>
-            <Route
-              index
-              element={
-                <HomePage isLoading={isLoading} roomsWithId={roomsDataWithId} />
-              }
-            />
-            <Route path="/:roomId/settings" element={<SettingsPage />} />
-            <Route path="/:roomId/banner" element={<BannerPage />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
+      <ContextWrapper>
+        <BrowserRouter>
+          <Layout navbarConfig={roomsDataWithId} isLoading={isLoading}>
+            <Routes>
+              <Route
+                index
+                element={
+                  <HomePage
+                    isLoading={isLoading}
+                    roomsWithId={roomsDataWithId}
+                  />
+                }
+              />
+              <Route path="/:roomId/settings" element={<SettingsPage />} />
+              <Route path="/:roomId/banner" element={<BannerPage />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+      </ContextWrapper>
     </MantineProvider>
   )
 }

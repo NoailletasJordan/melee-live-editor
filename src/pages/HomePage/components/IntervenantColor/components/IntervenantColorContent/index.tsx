@@ -9,8 +9,8 @@ interface Props {
   color: string
   onConfirm: () => void
   handleChangeColor: (newColor: string) => void
-  handleChangeType: (colorField: keyof IIntervenantColors) => void
-  isLoading: boolean
+  handleColorField: (colorField: keyof IIntervenantColors) => void
+  isSubmitting: boolean
   disableConfirm: boolean
 }
 
@@ -27,10 +27,10 @@ const IntervenantColorContent = (props: Props) => {
       <SegmentedControl
         data={SEGMENTED_CONTROL_DATA}
         value={props.colorField}
-        onChange={props.handleChangeType}
+        onChange={props.handleColorField}
       />
 
-      <Picker {...props} />
+      <Picker {...props} handleChangeColor={props.handleChangeColor} />
       <Group>
         <Switch
           checked={preselectedColorIsOpen}

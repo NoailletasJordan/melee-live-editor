@@ -23,3 +23,8 @@ export const getRandomSubmitMessage = () => {
   ]
   return pick(SUBMIT_MESSAGES)
 }
+
+export const getNonHiddenIntervenants = (groups: IGroup[]) =>
+  groups
+    .filter(({ hidden }) => !hidden)
+    .flatMap(({ intervenants }) => intervenants || [])
