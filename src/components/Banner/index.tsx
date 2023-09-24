@@ -9,7 +9,6 @@ import {
   Transition,
 } from "@mantine/core"
 import { useInterval, useTimeout, useToggle } from "@mantine/hooks"
-import { startCase } from "lodash"
 import { Fragment, useContext, useEffect, useState } from "react"
 import { ColorsContext } from "../ContextWrapper/context"
 import ImageContainer from "../ImageContainer"
@@ -61,7 +60,7 @@ const Banner = ({ intervenants, preventLinebreak, noHeadband }: Props) => {
                         whiteSpace: preventLinebreak ? "nowrap" : "normal",
                       }}
                     >
-                      {startCase(name)}
+                      {name}
                     </Text>
                     <Text
                       color={colorsContext.colors.companyColor}
