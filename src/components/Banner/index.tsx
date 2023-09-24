@@ -34,10 +34,7 @@ const Banner = ({ intervenants, preventLinebreak, noHeadband }: Props) => {
     <Box>
       {!noHeadband && <HeadBand />}
       <Group position="center">
-        <Stack
-          style={{ overflow: "hidden" }}
-          ff="font-family: 'Lato', sans-serif;"
-        >
+        <Stack style={{ overflow: "hidden" }}>
           <CustomDivider />
           <ScrollArea type="auto" offsetScrollbars>
             <Group noWrap position="center">
@@ -56,6 +53,7 @@ const Banner = ({ intervenants, preventLinebreak, noHeadband }: Props) => {
                       fz={22}
                       fw={600}
                       color={colorsContext.colors.nameColor}
+                      ff="Poppins, sans-serif"
                       style={{
                         whiteSpace: preventLinebreak ? "nowrap" : "normal",
                       }}
@@ -63,6 +61,7 @@ const Banner = ({ intervenants, preventLinebreak, noHeadband }: Props) => {
                       {name}
                     </Text>
                     <Text
+                      ff="Poppins, sans-serif"
                       color={colorsContext.colors.companyColor}
                       style={{
                         whiteSpace: preventLinebreak ? "nowrap" : "normal",
